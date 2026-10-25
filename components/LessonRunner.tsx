@@ -11,6 +11,7 @@ import { LoadError, ProgressBar, Spinner, shuffle, useAutoplay, useMeaningText }
 import { loadLesson } from "@/lib/data";
 import { completeLesson, useCompletedLessons } from "@/lib/progress";
 import { pickDistractors } from "@/lib/quiz";
+import { celebrate } from "@/lib/confetti";
 import { Rating, type Grade } from "@/lib/srs";
 import { num } from "@/lib/i18n";
 import { TOTAL_LESSONS } from "@/lib/constants";
@@ -110,6 +111,7 @@ function LessonFlow({ lesson }: { lesson: Lesson }) {
         );
         setPhase("done");
         window.scrollTo({ top: 0 });
+        celebrate();
       } else {
         setQueue(nextQueue);
         setQIndex(qIndex + 1);

@@ -59,9 +59,9 @@ export function ChoiceQuestion({
         {options.map((o, i) => {
           const isCorrect = o.key === correctKey;
           const isPicked = o.key === picked;
-          let style = "border-border bg-surface hover:border-primary";
-          if (answered && isCorrect) style = "border-success bg-success-soft text-success";
-          else if (answered && isPicked) style = "border-danger bg-danger-soft text-danger";
+          let style = "border-border bg-surface hover:border-primary hover:-translate-y-0.5 shadow-[var(--shadow-sm)]";
+          if (answered && isCorrect) style = `border-success bg-success-soft text-success ${isPicked ? "animate-bump" : ""}`;
+          else if (answered && isPicked) style = "border-danger bg-danger-soft text-danger animate-shake";
           else if (answered) style = "border-border bg-surface opacity-60";
           return (
             <button
@@ -69,7 +69,7 @@ export function ChoiceQuestion({
               type="button"
               disabled={answered}
               onClick={() => setPicked(o.key)}
-              className={`min-h-16 rounded-2xl border-2 px-4 py-3 flex items-center gap-3 text-left font-semibold transition-colors ${style}`}
+              className={`min-h-16 rounded-2xl border-2 px-4 py-3 flex items-center gap-3 text-left font-semibold transition-all ${style}`}
             >
               <span className="w-8 h-8 shrink-0 rounded-full bg-surface-2 text-muted text-sm flex items-center justify-center" aria-hidden>
                 {answered && isCorrect ? <Check className="w-5 h-5 text-success" /> : answered && isPicked ? <X className="w-5 h-5 text-danger" /> : num(locale, i + 1)}

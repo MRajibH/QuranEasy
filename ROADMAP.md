@@ -41,13 +41,13 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [ ] Optional: custom domain, Cloudflare Web Analytics (cookie-less)
 - [ ] Beta with family/masjid group, collect feedback
 
-## Phase 6 — Premium UI 🚧
-- [ ] Refined visual language: Islamic geometric pattern accents, layered soft shadows, gradient hero
-- [ ] Premium flashcard: 3D flip, satisfying correct/wrong micro-interactions
-- [ ] Celebration on lesson complete (lightweight confetti), milestone badges
-- [ ] Skeleton loaders instead of spinners; smoother transitions
-- [ ] Polished mobile layout (no awkward wrapping), larger Arabic on phones
-- [ ] Dark-mode polish and contrast review
+## Phase 6 — Premium UI ✅
+- [x] Refined visual language: deep-green hero with Rub el Hizb pattern and gold ayah, layered soft shadows, gradient buttons
+- [x] Premium flashcard with 3D flip; correct answers bump, wrong answers shake
+- [x] Lightweight confetti on lesson complete, review done, daily words and high practice scores (respects reduced motion)
+- [x] Skeleton loaders instead of spinners; gradient progress ring and bars
+- [x] Mobile polish: no horizontal overflow on any page at 375px, compact header, shorter hero on phones
+- [x] Dark-mode tokens for shadows, hero and pattern
 
 ## Phase 7 — Daily words, mastered inside-out (Bangla first) ✅
 - [x] **আজকের শব্দ (Words of the Day):** 2 new words every day — the most frequent content words you haven't started, never repeated

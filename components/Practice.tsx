@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { loadLemmas } from "@/lib/data";
 import { pickDistractors } from "@/lib/quiz";
 import { playWord } from "@/lib/audio";
+import { celebrate } from "@/lib/confetti";
 import { num } from "@/lib/i18n";
 import type { LemmaLite } from "@/lib/types";
 
@@ -95,6 +96,9 @@ export function Practice() {
 
 function Score({ score, total, onAgain, onExit }: { score: number; total: number; onAgain: () => void; onExit: () => void }) {
   const { locale, t } = useLocale();
+  useEffect(() => {
+    if (total && score / total >= 0.7) celebrate();
+  }, [score, total]);
   return (
     <div className="card p-10 text-center animate-pop">
       <Trophy className="w-16 h-16 mx-auto text-accent" aria-hidden />

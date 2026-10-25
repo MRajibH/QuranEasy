@@ -74,7 +74,7 @@ export default async function WordPage({ params }: { params: Params }) {
         )}
       </nav>
 
-      <header className="card p-6 md:p-10 text-center">
+      <header className="card p-6 md:p-10 text-center bg-[radial-gradient(120%_70%_at_50%_0%,var(--primary-soft),var(--surface)_70%)]">
         <h1 className="font-arabic ar-xl text-text" lang="ar" dir="rtl">{l.ar}</h1>
         {l.tr && <p className="text-muted text-lg italic mt-1">{l.tr}</p>}
         <p className="mt-4 text-3xl font-bold" lang={locale}>{primary}</p>

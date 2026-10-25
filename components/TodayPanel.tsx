@@ -95,7 +95,7 @@ export function TodayPanel() {
   const newToday = useTodayNewCount();
 
   if (!overview || due === undefined || !done) {
-    return <div className="card h-64 animate-pulse" aria-hidden />;
+    return <div className="card h-72 skeleton" aria-hidden />;
   }
   if (overview.total === 0) return <Onboarding />;
 
@@ -105,10 +105,10 @@ export function TodayPanel() {
   return (
     <section className="grid gap-4 md:grid-cols-[1fr_auto]" aria-label={t.home.todayTitle}>
       <div className="card p-6 md:p-8">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-bold">{t.home.todayTitle}</h2>
           {overview.streak > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft text-accent px-3 py-1 font-semibold">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft text-accent px-3 py-1 text-sm font-semibold whitespace-nowrap">
               <Flame className="w-5 h-5" aria-hidden />
               {t.home.streak(num(locale, overview.streak))}
             </span>
@@ -118,7 +118,7 @@ export function TodayPanel() {
         <div className="mt-5 grid gap-3">
           {due > 0 ? (
             <Link href={`/${locale}/review/`} className="btn btn-primary btn-lg w-full justify-between">
-              <span className="flex items-center gap-3">
+              <span className="flex items-center gap-3 text-left">
                 <Repeat className="w-6 h-6" aria-hidden />
                 {t.home.startReview}
               </span>
@@ -131,7 +131,7 @@ export function TodayPanel() {
             href={`/${locale}/lesson/?n=${next}`}
             className={`btn btn-lg w-full justify-between ${due > 0 || goalMet ? "btn-secondary" : "btn-primary"}`}
           >
-            <span className="flex items-center gap-3">
+            <span className="flex items-center gap-3 text-left">
               <GraduationCap className="w-6 h-6" aria-hidden />
               {t.home.nextLesson(num(locale, next))}
             </span>

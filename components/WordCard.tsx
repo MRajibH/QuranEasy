@@ -51,7 +51,7 @@ export function WordCard({ word, ex, audioLoc }: { word: CardWord; ex?: Example;
   const { translit } = useSettings();
   const loc = audioLoc ?? (ex ? exampleLocation(ex) : undefined);
   return (
-    <div className="card p-6 md:p-8 text-center animate-pop">
+    <div className="card p-6 md:p-8 text-center animate-pop bg-[radial-gradient(120%_70%_at_50%_0%,var(--primary-soft),var(--surface)_70%)]">
       <p className="font-arabic ar-xl text-text" lang="ar" dir="rtl">
         {word.ar}
       </p>

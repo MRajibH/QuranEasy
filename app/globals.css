@@ -22,6 +22,13 @@
   --danger-soft: #f8e1de;
   --ui-scale: 1;
   --ar-scale: 1;
+  --shadow-sm: 0 1px 2px rgb(27 36 33 / 0.05), 0 1px 1px rgb(27 36 33 / 0.03);
+  --shadow: 0 1px 2px rgb(27 36 33 / 0.04), 0 4px 12px rgb(27 36 33 / 0.06), 0 12px 32px -12px rgb(27 36 33 / 0.10);
+  --shadow-lg: 0 2px 4px rgb(27 36 33 / 0.05), 0 12px 28px rgb(27 36 33 / 0.10), 0 32px 64px -24px rgb(14 90 72 / 0.25);
+  --hero-from: #0e5a48;
+  --hero-to: #073a2e;
+  --gold: #c9a24a;
+  --pattern-ink: rgb(255 255 255 / 0.07);
   color-scheme: light;
 }
 
@@ -42,6 +49,13 @@
   --success-soft: #163626;
   --danger: #f08a80;
   --danger-soft: #3d1d1a;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 24px 48px -16px rgb(0 0 0 / 0.6);
+  --hero-from: #12382f;
+  --hero-to: #0a211b;
+  --gold: #e0b65c;
+  --pattern-ink: rgb(224 182 92 / 0.07);
   color-scheme: dark;
 }
 
@@ -113,9 +127,13 @@ body {
 }
 .btn:active { transform: scale(0.98); }
 .btn:disabled { opacity: 0.5; pointer-events: none; }
-.btn-primary { background: var(--primary); color: var(--primary-fg); }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 88%, white) 0%, var(--primary) 100%);
+  color: var(--primary-fg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 2px rgb(0 0 0 / 0.12), 0 6px 16px -6px color-mix(in srgb, var(--primary) 70%, transparent);
+}
+.btn-primary:hover { background: var(--primary-hover); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 8px 22px -6px color-mix(in srgb, var(--primary) 75%, transparent); }
+.btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { border-color: var(--primary); }
 .btn-ghost { color: var(--primary); }
 .btn-ghost:hover { background: var(--primary-soft); }
@@ -123,9 +141,59 @@ body {
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow);
 }
+a.card, button.card { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+a.card:hover, button.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* Deep green hero with a faint eight-pointed-star lattice (Rub el Hizb motif). */
+.hero {
+  position: relative;
+  overflow: hidden;
+  color: #f4efe2;
+  background:
+    radial-gradient(120% 80% at 85% 0%, color-mix(in srgb, var(--gold) 22%, transparent) 0%, transparent 55%),
+    linear-gradient(160deg, var(--hero-from), var(--hero-to));
+  border-radius: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--pattern-ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='black' stroke-width='1.4'%3E%3Crect x='18' y='18' width='28' height='28'/%3E%3Crect x='18' y='18' width='28' height='28' transform='rotate(45 32 32)'/%3E%3Ccircle cx='32' cy='32' r='6'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='black' stroke-width='1.4'%3E%3Crect x='18' y='18' width='28' height='28'/%3E%3Crect x='18' y='18' width='28' height='28' transform='rotate(45 32 32)'/%3E%3Ccircle cx='32' cy='32' r='6'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  -webkit-mask-size: 64px;
+  mask-size: 64px;
+  pointer-events: none;
+}
+.hero > * { position: relative; }
+.text-gold { color: var(--gold); }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 0%, color-mix(in srgb, var(--surface-2) 40%, var(--surface)) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+  border-radius: 1rem;
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+/* 3D flip flashcard */
+.flip { perspective: 1400px; }
+.flip-inner { display: grid; transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); transform-style: preserve-3d; }
+.flip-inner.flipped { transform: rotateY(180deg); }
+.flip-face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-back { transform: rotateY(180deg); }
+
+@keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); } }
+.animate-shake { animation: shake 0.45s ease both; }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+.animate-bump { animation: bump 0.35s ease both; }
+@keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+.animate-rise { animation: rise 0.35s ease-out both; }
 
 .hl-word {
   background: var(--accent-soft);
@@ -142,3 +210,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Grid items default to min-width:auto, so a truncated line would stretch its column past the screen. */
+.grid > * { min-width: 0; }

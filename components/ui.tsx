@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Volume2 } from "lucide-react";
 import { playWord } from "@/lib/audio";
 import { useSettings } from "@/lib/settings";
@@ -85,16 +85,23 @@ export function ProgressRing({ pct, size = 120, stroke = 12, children }: { pct: 
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(100, pct));
+  const gid = useId();
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" />
+            <stop offset="100%" stopColor="var(--gold)" />
+          </linearGradient>
+        </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--surface-2)" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--primary)"
+          stroke={`url(#${gid})`}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
@@ -117,7 +124,10 @@ export function ProgressBar({ value, max, className = "" }: { value: number; max
       aria-valuemin={0}
       aria-valuemax={max}
     >
-      <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+      <div
+        className="h-full rounded-full transition-all duration-500"
+        style={{ width: `${pct}%`, background: "linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 55%, var(--gold)))" }}
+      />
     </div>
   );
 }
@@ -134,12 +144,20 @@ export function PageTitle({ title, subtitle, children }: { title: string; subtit
   );
 }
 
+/** Skeleton placeholder shaped like a page heading + card, shown while data loads. */
 export function Spinner() {
   const { t } = useLocale();
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted" role="status">
-      <div className="w-10 h-10 rounded-full border-4 border-primary-soft border-t-primary animate-spin" />
-      <span>{t.common.loading}</span>
+    <div className="max-w-2xl mx-auto grid gap-4 py-2" role="status" aria-label={t.common.loading}>
+      <div className="skeleton h-9 w-1/2" />
+      <div className="skeleton h-4 w-3/4" />
+      <div className="card p-8 grid gap-4 justify-items-center">
+        <div className="skeleton h-16 w-40" />
+        <div className="skeleton h-12 w-28 rounded-full" />
+        <div className="skeleton h-8 w-48" />
+        <div className="skeleton h-5 w-32" />
+      </div>
+      <div className="skeleton h-14 w-full" />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { getDailyPicks } from "@/lib/daily";
 import { loadWord } from "@/lib/data";
 import { db } from "@/lib/db";
 import { addToReview } from "@/lib/progress";
+import { celebrate } from "@/lib/confetti";
 import { grammarChips } from "@/lib/grammar";
 import { useSettings } from "@/lib/settings";
 import { num } from "@/lib/i18n";
@@ -39,7 +40,7 @@ function DailyWord({ word, index, started }: { word: WordDetail; index: number; 
   const ex = word.examples[0];
   return (
     <article className="grid gap-4" aria-labelledby={`dw-${word.id}`}>
-      <header className="card p-6 md:p-10 text-center relative overflow-hidden">
+      <header className="card p-6 md:p-10 text-center relative overflow-hidden bg-[radial-gradient(120%_70%_at_50%_0%,var(--primary-soft),var(--surface)_70%)]">
         <span className="absolute top-4 left-4 rounded-full bg-accent-soft text-accent px-3 py-1 text-sm font-bold">
           {t.daily.word(num(locale, index + 1))}
         </span>
@@ -73,7 +74,7 @@ function DailyWord({ word, index, started }: { word: WordDetail; index: number; 
           <Check className="w-5 h-5" aria-hidden /> {t.daily.mastered}
         </p>
       ) : (
-        <button type="button" className="btn btn-primary btn-lg w-full" onClick={() => addToReview(word.id)}>
+        <button type="button" className="btn btn-primary btn-lg w-full" onClick={() => addToReview(word.id).then(() => celebrate(60))}>
           <CheckCircle2 className="w-6 h-6" aria-hidden /> {t.daily.master}
         </button>
       )}

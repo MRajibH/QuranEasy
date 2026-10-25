@@ -101,7 +101,7 @@ export function LessonPath({ lessons }: { lessons: PathLesson[] }) {
                         ref={isCurrent ? currentRef : undefined}
                         href={`/${locale}/lesson/?n=${l.n}`}
                         className={`flex items-center gap-3 rounded-2xl border-2 p-3 transition-colors ${
-                          isCurrent ? "border-primary bg-primary-soft" : "border-transparent bg-surface-2/60 hover:border-border"
+                          isCurrent ? "border-primary bg-primary-soft shadow-[0_0_0_6px_color-mix(in_srgb,var(--primary)_15%,transparent)]" : "border-transparent bg-surface-2/60 hover:border-border"
                         }`}
                       >
                         <span

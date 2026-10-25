@@ -11,6 +11,7 @@ import { loadLemmaMap, loadLemmas } from "@/lib/data";
 import { dueCutoff, nextLessonId, reviewCard, useCompletedLessons } from "@/lib/progress";
 import { formatInterval, previewDue, Rating, type Grade } from "@/lib/srs";
 import { pickDistractors } from "@/lib/quiz";
+import { celebrate } from "@/lib/confetti";
 import { useSettings } from "@/lib/settings";
 import { num } from "@/lib/i18n";
 import { TOTAL_LESSONS, WORD_PAGE_MIN_FREQ } from "@/lib/constants";
@@ -72,7 +73,9 @@ export function ReviewSession() {
       const updated = await reviewCard(head, grade);
       setReviewed((r) => r + 1);
       const soon = new Date(updated.due).getTime() - Date.now() < REQUEUE_MS;
-      setQueue(soon ? [...rest, updated] : rest);
+      const next = soon ? [...rest, updated] : rest;
+      if (next.length === 0) celebrate();
+      setQueue(next);
     },
     [queue],
   );
@@ -225,15 +228,23 @@ function Flashcard({ card, lemma, onRate }: { card: CardRow; lemma: LemmaLite; o
 
   return (
     <div className="animate-pop">
-      <div className="card p-6 md:p-10 text-center min-h-80 flex flex-col items-center justify-center">
-        <p className="font-arabic ar-xl" lang="ar" dir="rtl">{ar}</p>
-        {loc && <AudioButton location={loc} size="lg" className="mt-2" />}
-        {!shown ? (
-          <p className="mt-6 text-muted">{t.review.think}</p>
-        ) : (
-          <div className="mt-4 animate-pop">
+      {/* 3D flip: front asks, back answers. The hidden face is inert so it can't take focus. */}
+      <div className="flip">
+        <div className={`flip-inner ${shown ? "flipped" : ""}`}>
+          <div
+            className="flip-face card p-6 md:p-10 text-center min-h-80 flex flex-col items-center justify-center cursor-pointer bg-[radial-gradient(120%_70%_at_50%_0%,var(--primary-soft),var(--surface)_70%)]"
+            onClick={() => setShown(true)}
+            inert={shown}
+          >
+            <p className="font-arabic ar-xl" lang="ar" dir="rtl">{ar}</p>
+            {loc && <AudioButton location={loc} size="lg" className="mt-2" />}
+            <p className="mt-6 text-muted">{t.review.think}</p>
+          </div>
+          <div className="flip-face flip-back card p-6 md:p-10 text-center min-h-80 flex flex-col items-center justify-center" inert={!shown}>
+            <p className="font-arabic ar-lg" lang="ar" dir="rtl">{ar}</p>
             {translit && tr && <p className="text-muted italic text-lg">{tr}</p>}
-            <Meaning bn={bn} en={en} size="xl" className="mt-2" />
+            {loc && <AudioButton location={loc} className="mt-2" />}
+            <Meaning bn={bn} en={en} size="xl" className="mt-3" />
             <div className="mt-3 flex flex-wrap justify-center gap-2 text-sm">
               {root && (
                 <span className="rounded-full bg-accent-soft text-accent px-3 py-1 font-semibold">
@@ -250,7 +261,7 @@ function Flashcard({ card, lemma, onRate }: { card: CardRow; lemma: LemmaLite; o
               </Link>
             )}
           </div>
-        )}
+        </div>
       </div>
       <div className="mt-4">
         {!shown ? (

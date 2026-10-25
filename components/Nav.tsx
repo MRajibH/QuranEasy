@@ -44,10 +44,10 @@ export function Header() {
   const switchHref = path.replace(/^\/(bn|en)/, `/${other}`);
   return (
     <header className="sticky top-0 z-30 bg-bg/90 backdrop-blur border-b border-border">
-      <div className="mx-auto max-w-5xl px-4 h-16 flex items-center gap-3">
+      <div className="mx-auto max-w-5xl px-4 h-16 flex items-center gap-2 sm:gap-3">
         <Link href={`/${locale}/`} className="flex items-center gap-2 font-bold text-lg text-primary shrink-0">
           <Logo className="w-9 h-9" />
-          <span>QuranEasy</span>
+          <span className="hidden sm:inline">QuranEasy</span>
         </Link>
         <nav className="hidden md:flex items-center gap-1 ml-4" aria-label="Main">
           {items.map(({ href, label, Icon, exact, badge }) => (
@@ -108,7 +108,7 @@ export function BottomNav() {
   const items = useItems();
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface border-t border-border pb-[env(safe-area-inset-bottom)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.18)]"
       aria-label="Main"
     >
       <ul className="grid grid-cols-5">
@@ -123,7 +123,7 @@ export function BottomNav() {
                 }`}
                 aria-current={active ? "page" : undefined}
               >
-                <span className={`flex items-center justify-center w-12 h-8 rounded-full ${active ? "bg-primary-soft" : ""}`}>
+                <span className={`flex items-center justify-center w-14 h-8 rounded-full transition-colors ${active ? "bg-primary-soft" : ""}`}>
                   <Icon className="w-6 h-6" aria-hidden />
                 </span>
                 {label}
