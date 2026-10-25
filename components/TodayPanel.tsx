@@ -1,0 +1,163 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowRight, Flame, GraduationCap, Repeat } from "lucide-react";
+import { useLiveQuery } from "dexie-react-hooks";
+import { useLocale } from "./LocaleProvider";
+import { ProgressBar, ProgressRing } from "./ui";
+import { db } from "@/lib/db";
+import { nextLessonId, useCompletedLessons, useDueCount, useTodayNewCount } from "@/lib/progress";
+import { updateSettings, useSettings, type MeaningLang } from "@/lib/settings";
+import { coveragePct, streak } from "@/lib/stats";
+import { State } from "@/lib/srs";
+import { num } from "@/lib/i18n";
+import { loadLemmaMap } from "@/lib/data";
+import { TOTAL_LESSONS, TOTAL_WORDS } from "@/lib/constants";
+
+function useOverview() {
+  return useLiveQuery(async () => {
+    const d = db();
+    const [cards, days] = await Promise.all([d.cards.toArray(), d.logs.orderBy("day").uniqueKeys()]);
+    const known = cards.filter((c) => c.state === State.Review);
+    let coverage = 0;
+    if (cards.length) {
+      const map = await loadLemmaMap();
+      coverage = coveragePct(cards.map((c) => map.get(c.id)?.[5] ?? 0), TOTAL_WORDS);
+    }
+    return { total: cards.length, known: known.length, coverage, streak: streak(new Set(days as string[])) };
+  }, []);
+}
+
+function Onboarding() {
+  const { locale, t } = useLocale();
+  const s = useSettings();
+  const opts: [MeaningLang, string][] = [
+    ["bn", t.settings.bangla],
+    ["en", t.settings.english],
+    ["both", t.settings.both],
+  ];
+  return (
+    <section className="card p-6 md:p-8 animate-pop" aria-labelledby="setup">
+      <h2 id="setup" className="text-2xl font-bold">{t.home.setupTitle}</h2>
+      <fieldset className="mt-6">
+        <legend className="font-semibold text-lg mb-3">{num(locale, 1)}. {t.home.setupMeaning}</legend>
+        <div className="grid grid-cols-3 gap-3">
+          {opts.map(([v, label]) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => updateSettings({ meaning: v })}
+              className={`btn ${s.meaning === v ? "btn-primary" : "btn-secondary"}`}
+              aria-pressed={s.meaning === v}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="mt-6">
+        <legend className="font-semibold text-lg mb-3">{num(locale, 2)}. {t.home.setupGoal}</legend>
+        <div className="grid grid-cols-3 gap-3">
+          {[5, 10, 20].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => updateSettings({ dailyNew: n })}
+              className={`btn ${s.dailyNew === n ? "btn-primary" : "btn-secondary"}`}
+              aria-pressed={s.dailyNew === n}
+            >
+              {num(locale, n)}
+            </button>
+          ))}
+        </div>
+        <p className="text-muted mt-2">{t.home.goalHint(num(locale, s.dailyNew))}</p>
+      </fieldset>
+      <Link
+        href={`/${locale}/lesson/?n=1`}
+        onClick={() => updateSettings({ onboarded: true })}
+        className="btn btn-primary btn-lg w-full mt-8"
+      >
+        {t.home.startFirst} <ArrowRight className="w-5 h-5" aria-hidden />
+      </Link>
+    </section>
+  );
+}
+
+export function TodayPanel() {
+  const { locale, t } = useLocale();
+  const settings = useSettings();
+  const overview = useOverview();
+  const due = useDueCount();
+  const done = useCompletedLessons();
+  const newToday = useTodayNewCount();
+
+  if (!overview || due === undefined || !done) {
+    return <div className="card h-64 animate-pulse" aria-hidden />;
+  }
+  if (overview.total === 0) return <Onboarding />;
+
+  const next = nextLessonId(done, TOTAL_LESSONS);
+  const goalMet = (newToday ?? 0) >= settings.dailyNew;
+
+  return (
+    <section className="grid gap-4 md:grid-cols-[1fr_auto]" aria-label={t.home.todayTitle}>
+      <div className="card p-6 md:p-8">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-2xl font-bold">{t.home.todayTitle}</h2>
+          {overview.streak > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft text-accent px-3 py-1 font-semibold">
+              <Flame className="w-5 h-5" aria-hidden />
+              {t.home.streak(num(locale, overview.streak))}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-5 grid gap-3">
+          {due > 0 ? (
+            <Link href={`/${locale}/review/`} className="btn btn-primary btn-lg w-full justify-between">
+              <span className="flex items-center gap-3">
+                <Repeat className="w-6 h-6" aria-hidden />
+                {t.home.startReview}
+              </span>
+              <span className="rounded-full bg-primary-fg/20 px-3 py-0.5">{num(locale, due)}</span>
+            </Link>
+          ) : (
+            <p className="rounded-2xl bg-success-soft text-success font-semibold px-5 py-4">{t.home.noDue}</p>
+          )}
+          <Link
+            href={`/${locale}/lesson/?n=${next}`}
+            className={`btn btn-lg w-full justify-between ${due > 0 || goalMet ? "btn-secondary" : "btn-primary"}`}
+          >
+            <span className="flex items-center gap-3">
+              <GraduationCap className="w-6 h-6" aria-hidden />
+              {t.home.nextLesson(num(locale, next))}
+            </span>
+            <ArrowRight className="w-5 h-5" aria-hidden />
+          </Link>
+        </div>
+        {due > 0 && <p className="mt-3 text-muted">{t.home.dueReviews(num(locale, due))}</p>}
+
+        <div className="mt-6">
+          <div className="flex justify-between text-sm font-semibold mb-1.5">
+            <span>{t.home.todayGoal}</span>
+            <span className="text-muted">{t.home.newToday(num(locale, newToday ?? 0), num(locale, settings.dailyNew))}</span>
+          </div>
+          <ProgressBar value={newToday ?? 0} max={settings.dailyNew} />
+        </div>
+      </div>
+
+      <Link
+        href={`/${locale}/progress/`}
+        className="card p-6 flex flex-col items-center justify-center text-center gap-2 hover:border-primary md:w-64"
+      >
+        <ProgressRing pct={overview.coverage} size={150} stroke={14}>
+          <span className="text-3xl font-bold text-primary">{num(locale, overview.coverage)}%</span>
+        </ProgressRing>
+        <span className="font-semibold">{t.home.coverage}</span>
+        <span className="text-sm text-muted">
+          {num(locale, overview.total)} {t.common.words}
+        </span>
+      </Link>
+    </section>
+  );
+}

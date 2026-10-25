@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QuranEasy — কুরআনের প্রতিটি শব্দ সহজে শিখুন
 
-## Getting Started
+A free, fully static website to learn **every word of the Qur'an** in **Bangla** (first) and **English**,
+using frequency-first lessons and spaced repetition. No account, no ads, works offline.
+Built with the intention of sadaqah jariyah.
 
-First, run the development server:
+- 77,429 words · 4,806 base words (lemmas) · 481 lessons of 10 words
+- The 300 most frequent lemmas cover **74.2%** of all words in the Qur'an
+- Word-by-word reader for all 114 surahs, with recitation audio
+- FSRS spaced repetition, practice games, progress dashboard, offline PWA
+
+See [ROADMAP.md](ROADMAP.md) for phases and status.
+
+## Tech
+
+Next.js 15 (App Router, `output: "export"`) · TypeScript · Tailwind CSS v4 · Dexie (IndexedDB) · ts-fsrs · lucide-react.
+All progress is stored locally in the browser; there is no server.
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm test             # unit tests (vitest)
+npm run lint
+npm run build        # static site in out/ (+ service worker, Cloudflare limit check)
+npm start            # serve out/ locally
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Data
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Generated data is committed (`data/`, `public/data/`), so a normal build needs no network.
+To regenerate from the sources:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run data:fetch   # downloads raw data into data-raw/ (gitignored)
+npm run data:build   # writes data/lemmas.json, public/data/**
+npm run icons        # regenerates icons and og.png
+```
 
-## Learn More
+## Deploy (Cloudflare Pages, free)
 
-To learn more about Next.js, take a look at the following resources:
+1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick `MRajibH/QuranEasy`.
+2. Build settings: Framework preset **None**, build command `npm run build`, output directory `out`.
+3. Environment variables: `NODE_VERSION` = `22`, and `NEXT_PUBLIC_SITE_URL` = your final URL
+   (e.g. `https://quraneasy.pages.dev`), used for the sitemap and social previews.
+4. Save and deploy. Every push to `main` redeploys automatically.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Optional: add a custom domain and turn on Cloudflare Web Analytics (cookie-less) in the Pages project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The export is ~9,600 files, well within the free tier's 20,000-file limit; `npm run build` fails loudly if a
+future change exceeds it.
 
-## Deploy on Vercel
+## Sources & credits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Word-by-word meanings, transliteration, recitation audio: [Quran.com](https://quran.com) API / QuranCDN
+- Lemmas and roots: [Quranic Arabic Corpus](https://corpus.quran.com) (GNU GPL)
+- Bangla translation: Taisirul Quran (Tawheed Publication) · English: Saheeh International
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Base meanings for each lemma are selected automatically from the word-by-word data. Please report mistakes
+via [GitHub issues](https://github.com/MRajibH/QuranEasy/issues). Translations are the property of their
+publishers; check their terms before any commercial use.
+
+## License
+
+Code: GPL-3.0-or-later (compatible with the Quranic Arabic Corpus license).

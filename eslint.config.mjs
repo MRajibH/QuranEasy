@@ -18,6 +18,9 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "data-raw/**",
+      "public/**",
+      "scripts/sw-template.js",
     ],
   },
 ];

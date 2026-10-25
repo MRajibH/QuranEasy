@@ -1,27 +1,42 @@
 {
-  "name": "quranic-words",
+  "name": "quraneasy",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "build": "next build && node scripts/postbuild.mjs",
+    "start": "npx serve@14 out",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "data:fetch": "node scripts/fetch-data.mjs",
+    "data:build": "node scripts/build-data.mjs",
+    "icons": "node scripts/gen-icons.mjs"
   },
   "dependencies": {
+    "dexie": "^4.4.7",
+    "dexie-react-hooks": "^4.4.0",
+    "lucide-react": "^1.61.0",
+    "next": "15.5.28",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.28"
+    "server-only": "^0.0.1",
+    "ts-fsrs": "^5.4.2"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.28",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
+  },
+  "description": "Learn every word of the Quran in Bangla and English — free, static, offline-first.",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw source data (re-download with npm run data:fetch)
+/data-raw
+/.claude

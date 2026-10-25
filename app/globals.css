@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens. Calm paper + deep green + gold; every pair meets WCAG AA. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #faf7f0;
+  --surface: #ffffff;
+  --surface-2: #f3eee2;
+  --text: #1b2421;
+  --muted: #4f5a55;
+  --border: #e3dccb;
+  --primary: #0e5a48;
+  --primary-hover: #0a4739;
+  --primary-soft: #e1efe9;
+  --primary-fg: #ffffff;
+  --accent: #9a6f17;
+  --accent-soft: #f6ecd4;
+  --success: #1f7a4b;
+  --success-soft: #dff2e7;
+  --danger: #b23a30;
+  --danger-soft: #f8e1de;
+  --ui-scale: 1;
+  --ar-scale: 1;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0e1412;
+  --surface: #151d1a;
+  --surface-2: #1c2622;
+  --text: #ecf1ed;
+  --muted: #a7b3ad;
+  --border: #2b3833;
+  --primary: #4cc39b;
+  --primary-hover: #6dd3b0;
+  --primary-soft: #18352c;
+  --primary-fg: #05211a;
+  --accent: #e0b65c;
+  --accent-soft: #3a2f17;
+  --success: #5fd197;
+  --success-soft: #163626;
+  --danger: #f08a80;
+  --danger-soft: #3d1d1a;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-bangla), var(--font-latin), system-ui, sans-serif;
+  --font-arabic: var(--font-quran), "Amiri Quran", "Scheherazade New", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base size is 18px (large by default, friendly for older eyes) and scales with the Text size setting. */
+html {
+  font-size: calc(112.5% * var(--ui-scale));
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+  font-feature-settings: "calt", "liga";
+  line-height: 2.1;
+}
+
+.ar-xl { font-size: calc(3.4rem * var(--ar-scale)); line-height: 1.9; }
+.ar-lg { font-size: calc(2.2rem * var(--ar-scale)); }
+.ar-md { font-size: calc(1.7rem * var(--ar-scale)); }
+.ar-sm { font-size: calc(1.35rem * var(--ar-scale)); }
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Buttons: min 48px tall tap targets */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.15s, transform 0.05s, border-color 0.15s;
+  user-select: none;
+  text-align: center;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+.btn-primary { background: var(--primary); color: var(--primary-fg); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); }
+.btn-secondary:hover { border-color: var(--primary); }
+.btn-ghost { color: var(--primary); }
+.btn-ghost:hover { background: var(--primary-soft); }
+.btn-lg { min-height: 3.6rem; font-size: 1.1rem; padding: 0.8rem 1.6rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+}
+
+.hl-word {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 0.4rem;
+  padding: 0 0.2em;
+}
+
+.verse { content-visibility: auto; contain-intrinsic-size: auto 260px; }
+
+@keyframes pop { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.animate-pop { animation: pop 0.18s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
