@@ -3,8 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
 import { WordActions } from "@/components/WordActions";
+import { WordStudy } from "@/components/WordStudy";
 import { getDict, LOCALES, num } from "@/lib/i18n";
-import { getLemma, getLemmas, getVerse, wordPageIds } from "@/lib/server-data";
+import { getLemma, getLemmas, getWordDetail, wordPageIds } from "@/lib/server-data";
+import { grammarChips } from "@/lib/grammar";
 import { lessonOfLemma, SITE_NAME, WORD_PAGE_MIN_FREQ } from "@/lib/constants";
 import type { Locale } from "@/lib/types";
 
@@ -37,16 +39,14 @@ export default async function WordPage({ params }: { params: Params }) {
   const { locale, id: idStr } = await params;
   const id = Number(idStr);
   const l = getLemma(id);
-  if (!l || l.freq < WORD_PAGE_MIN_FREQ) notFound();
+  const detail = getWordDetail(id);
+  if (!l || !detail || l.freq < WORD_PAGE_MIN_FREQ) notFound();
   const t = getDict(locale);
   const lemmas = getLemmas();
   const prev = id > 1 ? lemmas[id - 2] : null;
   const next = lemmas[id]?.freq >= WORD_PAGE_MIN_FREQ ? lemmas[id] : null;
   const lesson = lessonOfLemma(id);
-  const examples = l.refs.map((loc) => {
-    const [s, a, w] = loc.split(":").map(Number);
-    return { s, a, hi: w - 1, verse: getVerse(`${s}:${a}`) };
-  });
+  const chips = grammarChips(detail.g, locale);
   const primary = locale === "bn" ? l.bn : l.en;
   const secondary = locale === "bn" ? l.en : l.bn;
   const jsonLd = {
@@ -87,7 +87,9 @@ export default async function WordPage({ params }: { params: Params }) {
           )}
           <span className="rounded-full bg-primary-soft text-primary px-3 py-1 font-semibold">{t.common.appearsTimes(num(locale, l.freq))}</span>
           <span className="rounded-full bg-surface-2 text-muted px-3 py-1 font-semibold">{t.word.rank(num(locale, id))}</span>
-          {t.word.pos[l.pos] && <span className="rounded-full bg-surface-2 text-muted px-3 py-1 font-semibold">{t.word.pos[l.pos]}</span>}
+          {chips.map((c) => (
+            <span key={c} className="rounded-full bg-surface-2 text-muted px-3 py-1 font-semibold">{c}</span>
+          ))}
         </div>
         <WordActions lemmaId={id} audioLoc={l.refs[0]} />
         <Link href={`/${locale}/lesson/?n=${lesson}`} className="btn btn-primary btn-lg mt-4">
@@ -95,44 +97,31 @@ export default async function WordPage({ params }: { params: Params }) {
         </Link>
       </header>
 
-      {l.forms.length > 1 && (
-        <section className="card p-6" aria-labelledby="forms">
-          <h2 id="forms" className="text-xl font-bold mb-3">{t.word.forms}</h2>
-          <ul className="divide-y divide-border">
-            {l.forms.map((f) => (
-              <li key={f.ar} className="py-3 flex items-center gap-4">
-                <span className="font-arabic ar-sm min-w-24 text-right" lang="ar" dir="rtl">{f.ar}</span>
-                <span className="flex-1">
-                  <span className="block font-semibold">{locale === "bn" ? f.bn : f.en}</span>
-                  <span className="block text-sm text-muted">{f.tr}</span>
-                </span>
-                <span className="text-sm text-muted whitespace-nowrap">{num(locale, f.n)} {t.common.times}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <WordStudy word={detail} locale={locale} />
 
       <section aria-labelledby="examples">
         <h2 id="examples" className="text-xl font-bold mb-3">{t.word.examples}</h2>
         <div className="grid gap-4">
-          {examples.map(({ s, a, hi, verse }) => (
-            <figure key={`${s}:${a}`} className="card p-5">
-              <p className="font-arabic ar-md text-right" lang="ar" dir="rtl">
-                {verse.w.map((w, i) => (
-                  <span key={i}>
-                    <span className={i === hi ? "hl-word" : ""}>{w[0]}</span>{" "}
-                  </span>
-                ))}
-              </p>
-              <p className="mt-2" lang={locale}>{locale === "bn" ? verse.bn : verse.en}</p>
-              <figcaption className="mt-2 text-sm">
-                <Link href={`/${locale}/read/${s}/#v${a}`} className="text-primary font-semibold underline underline-offset-4">
-                  {t.common.surah} {num(locale, s)}:{num(locale, a)} — {t.word.readAyah}
-                </Link>
-              </figcaption>
-            </figure>
-          ))}
+          {detail.examples.map((ex) => {
+            const [s, a] = ex.ref.split(":");
+            return (
+              <figure key={ex.ref} className="card p-5">
+                <p className="font-arabic ar-md text-right" lang="ar" dir="rtl">
+                  {ex.w.map((w, i) => (
+                    <span key={i}>
+                      <span className={i === ex.hi ? "hl-word" : ""}>{w}</span>{" "}
+                    </span>
+                  ))}
+                </p>
+                <p className="mt-2" lang={locale}>{locale === "bn" ? ex.bn : ex.en}</p>
+                <figcaption className="mt-2 text-sm">
+                  <Link href={`/${locale}/read/${s}/#v${a}`} className="text-primary font-semibold underline underline-offset-4">
+                    {t.common.surah} {num(locale, s)}:{num(locale, a)} — {t.word.readAyah}
+                  </Link>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </section>
     </article>

@@ -67,3 +67,23 @@ export interface Verse {
   bn: string;
   w: VerseWord[];
 }
+
+/** relation tuple: [id, arabic, bangla, english, freq] */
+export type Relation = [id: number, ar: string, bn: string, en: string, freq: number];
+
+/** Deep study data for one lemma, from /data/word/ID.json */
+export interface WordDetail {
+  id: number;
+  ar: string;
+  tr: string;
+  bn: string;
+  en: string;
+  root: string;
+  freq: number;
+  g: import("./grammar").Grammar;
+  forms: { ar: string; n: number; en: string; bn: string; tr: string }[];
+  family: Relation[];
+  ant: Relation[];
+  syn: Relation[];
+  examples: Example[];
+}

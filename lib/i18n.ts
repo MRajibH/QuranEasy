@@ -15,7 +15,7 @@ export function num(locale: Locale, n: number | string, opts?: Intl.NumberFormat
 
 const bn = {
   appTagline: "কুরআনের প্রতিটি শব্দ সহজে শিখুন",
-  nav: { home: "আজ", learn: "শিখুন", review: "রিভিউ", read: "পড়ুন", progress: "অগ্রগতি", practice: "অনুশীলন", search: "খুঁজুন", settings: "সেটিংস", about: "পরিচিতি", support: "সহায়তা" },
+  nav: { daily: "আজকের শব্দ", home: "আজ", learn: "শিখুন", review: "রিভিউ", read: "পড়ুন", progress: "অগ্রগতি", practice: "অনুশীলন", search: "খুঁজুন", settings: "সেটিংস", about: "পরিচিতি", support: "সহায়তা" },
   common: {
     next: "পরবর্তী", prev: "আগের", back: "ফিরে যান", start: "শুরু করুন", continue: "চালিয়ে যান", done: "সম্পন্ন",
     close: "বন্ধ করুন", listen: "শুনুন", loading: "লোড হচ্ছে…", word: "শব্দ", words: "শব্দ", lesson: "পাঠ",
@@ -44,6 +44,7 @@ const bn = {
     newToday: (a: string, b: string) => `আজ ${a}/${b}টি নতুন শব্দ`,
     streak: (n: string) => `${n} দিন ধারাবাহিক`,
     coverage: "কুরআনের যত শব্দ বোঝেন",
+    wordsKnown: (a: string, b: string) => `কুরআনের ${b} শব্দের মধ্যে আপনি ${a}টি চেনেন`,
     howTitle: "কীভাবে কাজ করে",
     how: [
       ["বেশি ব্যবহৃত শব্দ আগে", "যে শব্দ কুরআনে সবচেয়ে বেশি আসে, সেটি আগে শিখবেন। তাই অল্প সময়েই অনেক বেশি বুঝবেন।"],
@@ -138,6 +139,7 @@ const bn = {
     title: "আপনার অগ্রগতি",
     streak: "ধারাবাহিক দিন", known: "শেখা শব্দ", learning: "শিখছেন", reviews: "মোট রিভিউ",
     coverage: "কুরআনের যত শব্দ চেনেন",
+    wordsKnown: (a: string, b: string) => `কুরআনের ${b} শব্দের মধ্যে আপনি ${a}টি চেনেন`,
     coverageText: (p: string) => `আপনি যে শব্দগুলো শিখছেন, সেগুলো কুরআনের মোট শব্দের ${p}%`,
     mastered: (p: string) => `ভালোভাবে আয়ত্ত: ${p}%`,
     lessonsDone: "সম্পন্ন পাঠ",
@@ -179,6 +181,30 @@ const bn = {
   about: {
     title: "পরিচিতি",
   },
+  study: {
+    grammar: "শব্দের পরিচয়",
+    numbers: "একবচন ও বহুবচন — কুরআনে যেভাবে এসেছে",
+    tenses: "কালের রূপ — কুরআনে যেভাবে এসেছে",
+    synonyms: "কাছাকাছি অর্থের শব্দ (সমার্থক)",
+    synonymsNote: "অর্থ কাছাকাছি, তবে প্রতিটি শব্দের নিজস্ব সূক্ষ্ম ভাব আছে।",
+    antonyms: "বিপরীত শব্দ",
+    family: "একই মূলের শব্দ",
+    familyNote: (r: string) => `মূল অক্ষর ${r} থেকে আসা আরও শব্দ — একটি মূল চিনলে অনেক শব্দ চেনা যায়।`,
+  },
+  daily: {
+    title: "আজকের শব্দ",
+    subtitle: "প্রতিদিন ২টি নতুন শব্দ — ভেতর-বাহির পুরোপুরি জেনে নিন।",
+    cardTitle: "আজকের ২টি শব্দ",
+    open: "আজকের শব্দ দেখুন",
+    master: "শিখে ফেলেছি — রিভিউতে রাখুন",
+    mastered: "রিভিউতে আছে",
+    allDone: "আজকের শব্দ শেখা শেষ — মাশাআল্লাহ! আগামীকাল নতুন শব্দ আসবে।",
+    word: (n: string) => `শব্দ ${n}`,
+    meaning: "অর্থ",
+    examples: "কুরআনে উদাহরণ",
+    done: "আজকের শব্দ শেখা হয়েছে",
+    noMore: "সব শব্দ শেখা হয়ে গেছে — আলহামদুলিল্লাহ!",
+  },
   support: {
     title: "সহায়তা করুন",
   },
@@ -194,7 +220,7 @@ export type Dict = typeof bn;
 
 const en: Dict = {
   appTagline: "Learn every word of the Qur'an, the easy way",
-  nav: { home: "Today", learn: "Learn", review: "Review", read: "Read", progress: "Progress", practice: "Practice", search: "Search", settings: "Settings", about: "About", support: "Support" },
+  nav: { daily: "Words of the Day", home: "Today", learn: "Learn", review: "Review", read: "Read", progress: "Progress", practice: "Practice", search: "Search", settings: "Settings", about: "About", support: "Support" },
   common: {
     next: "Next", prev: "Previous", back: "Back", start: "Start", continue: "Continue", done: "Done",
     close: "Close", listen: "Listen", loading: "Loading…", word: "word", words: "words", lesson: "Lesson",
@@ -223,6 +249,7 @@ const en: Dict = {
     newToday: (a: string, b: string) => `${a}/${b} new words today`,
     streak: (n: string) => `${n}-day streak`,
     coverage: "Of the Qur'an's words you know",
+    wordsKnown: (a: string, b: string) => `You know ${a} of the Qur'an's ${b} words`,
     howTitle: "How it works",
     how: [
       ["Most frequent words first", "Words that appear most often in the Qur'an come first, so a little study goes a long way."],
@@ -317,6 +344,7 @@ const en: Dict = {
     title: "Your progress",
     streak: "Day streak", known: "Words learned", learning: "Learning", reviews: "Total reviews",
     coverage: "Of the Qur'an's words you know",
+    wordsKnown: (a: string, b: string) => `You know ${a} of the Qur'an's ${b} words`,
     coverageText: (p: string) => `The words you are learning make up ${p}% of all words in the Qur'an`,
     mastered: (p: string) => `Mastered: ${p}%`,
     lessonsDone: "Lessons done",
@@ -356,6 +384,30 @@ const en: Dict = {
     saved: "Saved",
   },
   about: { title: "About" },
+  study: {
+    grammar: "About this word",
+    numbers: "Singular & plural — as used in the Qur'an",
+    tenses: "Tense forms — as used in the Qur'an",
+    synonyms: "Words with similar meaning",
+    synonymsNote: "Close in meaning, but each word keeps its own nuance.",
+    antonyms: "Opposite words",
+    family: "Words from the same root",
+    familyNote: (r: string) => `More words from the root ${r} — know one root, recognise many words.`,
+  },
+  daily: {
+    title: "Words of the Day",
+    subtitle: "2 new words every day — learn them inside out.",
+    cardTitle: "Today's 2 words",
+    open: "See today's words",
+    master: "I've learned it — add to review",
+    mastered: "In your reviews",
+    allDone: "Today's words are done — masha'Allah! New words arrive tomorrow.",
+    word: (n: string) => `Word ${n}`,
+    meaning: "Meaning",
+    examples: "Examples from the Qur'an",
+    done: "Today's words learned",
+    noMore: "You have learned every word — alhamdulillah!",
+  },
   support: { title: "Support" },
   notFound: "This page could not be found.",
   footer: {

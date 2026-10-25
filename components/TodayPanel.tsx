@@ -20,11 +20,14 @@ function useOverview() {
     const [cards, days] = await Promise.all([d.cards.toArray(), d.logs.orderBy("day").uniqueKeys()]);
     const known = cards.filter((c) => c.state === State.Review);
     let coverage = 0;
+    let words = 0;
     if (cards.length) {
       const map = await loadLemmaMap();
-      coverage = coveragePct(cards.map((c) => map.get(c.id)?.[5] ?? 0), TOTAL_WORDS);
+      const freqs = cards.map((c) => map.get(c.id)?.[5] ?? 0);
+      coverage = coveragePct(freqs, TOTAL_WORDS);
+      words = freqs.reduce((a, b) => a + b, 0);
     }
-    return { total: cards.length, known: known.length, coverage, streak: streak(new Set(days as string[])) };
+    return { total: cards.length, known: known.length, coverage, words, streak: streak(new Set(days as string[])) };
   }, []);
 }
 
@@ -153,10 +156,7 @@ export function TodayPanel() {
         <ProgressRing pct={overview.coverage} size={150} stroke={14}>
           <span className="text-3xl font-bold text-primary">{num(locale, overview.coverage)}%</span>
         </ProgressRing>
-        <span className="font-semibold">{t.home.coverage}</span>
-        <span className="text-sm text-muted">
-          {num(locale, overview.total)} {t.common.words}
-        </span>
+        <span className="font-semibold">{t.home.wordsKnown(num(locale, overview.words), num(locale, TOTAL_WORDS))}</span>
       </Link>
     </section>
   );

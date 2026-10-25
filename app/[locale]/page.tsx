@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Brain, Layers, Repeat, Target } from "lucide-react";
 import { TodayPanel } from "@/components/TodayPanel";
+import { DailyCard } from "@/components/DailyWords";
 import { getDict, num } from "@/lib/i18n";
 import { getVerse } from "@/lib/server-data";
 import { TOTAL_LEMMAS, TOTAL_LESSONS, TOTAL_WORDS } from "@/lib/constants";
@@ -26,7 +27,10 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
         <p className="mt-3 text-lg text-muted max-w-2xl mx-auto">{t.home.heroText}</p>
       </section>
 
-      <TodayPanel />
+      <div className="grid gap-4">
+        <TodayPanel />
+        <DailyCard />
+      </div>
 
       <section className="card p-6 md:p-8 text-center bg-surface-2/50" aria-label="Qur'an 54:17">
         <p className="font-arabic ar-md text-text" lang="ar" dir="rtl">

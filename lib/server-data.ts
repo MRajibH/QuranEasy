@@ -1,7 +1,7 @@
 import "server-only";
 import fs from "node:fs";
 import path from "node:path";
-import type { Lemma, SurahInfo, Verse } from "./types";
+import type { Lemma, SurahInfo, Verse, WordDetail } from "./types";
 import { WORD_PAGE_MIN_FREQ } from "./constants";
 
 // Build-time data access for static pages. Everything is read once and cached in memory.
@@ -44,4 +44,12 @@ export function getSurah(n: number): Verse[] {
 export function getVerse(ref: string) {
   const [s, a] = ref.split(":").map(Number);
   return getSurah(s)[a - 1];
+}
+
+export function getWordDetail(id: number): WordDetail | undefined {
+  try {
+    return readJson<WordDetail>(`public/data/word/${id}.json`);
+  } catch {
+    return undefined;
+  }
 }

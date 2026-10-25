@@ -4,6 +4,8 @@
 //   public/data/lessons/N.json   – one lesson: its lemmas + a short example ayah each
 //   public/data/surahs.json      – surah index
 //   public/data/surah/N.json     – word-by-word text for one surah, each word linked to a lemma
+//   public/data/word/ID.json     – deep study data for one lemma (grammar, root family, synonyms/antonyms)
+//   public/data/daily.json       – content words eligible as "Words of the Day", by frequency
 // Lemma ids are frequency ranks, so lesson N always holds ids (N-1)*LESSON_SIZE+1 … N*LESSON_SIZE.
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -13,6 +15,8 @@ const OUT = path.resolve("public/data");
 const BUILD_OUT = path.resolve("data");
 const LESSON_SIZE = 10;
 const MAX_FORMS = 6;
+const MAX_FAMILY = 8;
+const WORD_PAGE_MIN_FREQ = 3; // keep in sync with lib/constants.ts
 const EXAMPLES_PER_LEMMA = 3;
 
 const readJson = async (p) => JSON.parse(await fs.readFile(p, "utf8"));
@@ -27,7 +31,7 @@ const clean = (s) =>
 const cleanWord = (s) =>
   clean(s)
     .replace(/["“”‘’]/g, "")
-    .replace(/^[\s,;:.।]+|[\s,;:.।]+$/g, "")
+    .replace(/^[\s,;:.।'`]+|[\s,;:.।'`]+$/g, "")
     .trim();
 
 // ---- morphology: location "s:a:w" -> primary (stem) segment ----
@@ -35,12 +39,14 @@ function parseMorphology(text) {
   const words = new Map();
   for (const line of text.split("\n")) {
     if (!line.trim()) continue;
-    const [loc, , tag, feat] = line.split("\t");
+    const [loc, text, tag, feat] = line.split("\t");
     const [s, a, w] = loc.split(":");
     const key = `${s}:${a}:${w}`;
     const feats = feat.split("|");
     const seg = {
+      text,
       tag,
+      feats,
       lemma: feats.find((f) => f.startsWith("LEM:"))?.slice(4),
       root: feats.find((f) => f.startsWith("ROOT:"))?.slice(5),
       affix: feats.includes("PREF") || feats.includes("SUFF"),
@@ -64,6 +70,72 @@ function mostCommon(counter) {
 }
 
 const bump = (map, k) => k && map.set(k, (map.get(k) ?? 0) + 1);
+
+// ---- grammar: gender/number/tense/verb form, counted over every occurrence of a lemma ----
+const GN = /^(M|F)(S|D|P)?$/;
+const newGrammar = () => ({ kind: new Map(), sub: new Map(), vf: new Map(), gender: new Map(), num: new Map(), tense: new Map() });
+// Forms are counted twice: words standing alone (no attached prefix/suffix) are preferred for display.
+const bumpForm = (map, cat, word, single) => {
+  if (!map.has(cat)) map.set(cat, { single: new Map(), any: new Map() });
+  const f = map.get(cat);
+  bump(f.any, word);
+  if (single) bump(f.single, word);
+};
+
+function noteGrammar(g, m, word) {
+  const f = m.feats;
+  const kind =
+    m.tag === "V" ? "verb"
+    : m.tag !== "N" ? "particle"
+    : f.includes("PN") ? "proper"
+    : f.some((x) => x === "PRON" || x === "DEM" || x === "REL") ? "pronoun"
+    : f.includes("ADJ") ? "adj"
+    : "noun";
+  bump(g.kind, kind);
+  for (const s of ["ACT_PCPL", "PASS_PCPL", "VN"]) if (f.includes(s)) bump(g.sub, s);
+  const vf = f.find((x) => x.startsWith("VF:"));
+  if (vf) bump(g.vf, vf.slice(3));
+  if (m.tag === "V") {
+    const tense = ["PERF", "IMPF", "IMPV"].find((x) => f.includes(x));
+    if (tense) bumpForm(g.tense, tense, word, m.single);
+  } else if (m.tag === "N") {
+    const gn = f.find((x) => GN.test(x));
+    if (gn) {
+      const [, gender, number = "S"] = gn.match(GN);
+      // Broken plurals are tagged feminine plural, so gender comes from singular uses only.
+      if (number === "S") bump(g.gender, gender);
+      bumpForm(g.num, number, word, m.single);
+    }
+  }
+}
+
+function top(map) {
+  let best = null;
+  for (const [k, n] of map) if (!best || n > best[1]) best = [k, n];
+  return best;
+}
+
+function finalizeGrammar(g, freq) {
+  const out = { kind: top(g.kind)?.[0] ?? "noun" };
+  const sub = top(g.sub);
+  if (sub && sub[1] >= freq / 2) out.sub = sub[0];
+  const vf = top(g.vf);
+  if (vf && vf[1] >= freq / 2) out.vf = Number(vf[0]);
+  const genderTotal = [...g.gender.values()].reduce((a, b) => a + b, 0);
+  const gender = top(g.gender);
+  if (gender && genderTotal >= 2 && gender[1] / genderTotal >= 0.75) out.gender = gender[0];
+  const forms = (map) => {
+    const o = {};
+    for (const [cat, { single, any }] of map) {
+      const [ar] = top(single.size ? single : any);
+      o[cat] = [ar, [...any.values()].reduce((a, b) => a + b, 0)];
+    }
+    return Object.keys(o).length ? o : undefined;
+  };
+  if (out.kind === "verb") out.tense = forms(g.tense);
+  else if (out.kind !== "particle" && out.kind !== "pronoun") out.num = forms(g.num);
+  return out;
+}
 
 async function main() {
   const morph = parseMorphology(await fs.readFile(path.join(RAW, "morphology.txt"), "utf8"));
@@ -89,12 +161,13 @@ async function main() {
           let st = lemmaKeys.get(key);
           if (!st) {
             st = { key, root: m.root ?? "", tag: m.tag, freq: 0, en: new Map(), bn: new Map(),
-              enAll: new Map(), bnAll: new Map(), tr: new Map(), forms: new Map(), occ: [] };
+              enAll: new Map(), bnAll: new Map(), tr: new Map(), forms: new Map(), occ: [], gram: newGrammar() };
             lemmaKeys.set(key, st);
           }
           const tEn = cleanWord(w.translation?.text);
           const tBn = cleanWord(wordsBn[j]?.translation?.text);
           st.freq++;
+          noteGrammar(st.gram, m, w.text_uthmani);
           bump(st.enAll, tEn);
           bump(st.bnAll, tBn);
           if (m.single) {
@@ -151,12 +224,27 @@ async function main() {
     bn: mostCommon(st.bn) || mostCommon(st.bnAll),
     en: mostCommon(st.en) || mostCommon(st.enAll),
     tr: mostCommon(st.tr),
+    g: finalizeGrammar(st.gram, st.freq),
     refs: pickExamples(st.occ),
     forms: [...st.forms.entries()]
       .sort((a, b) => b[1].n - a[1].n)
       .slice(0, MAX_FORMS)
       .map(([ar, f]) => ({ ar, ...f })),
   }));
+
+  // Gender: masculine tags are kept; feminine is shown only with a feminine marker (ة / ى / اء)
+  // or for curated unmarked feminine nouns, because the corpus tag alone is unreliable (e.g. قَلْب).
+  const curated = await readJson(path.resolve("data/curated/relations.json"));
+  const nfd = (x) => x.normalize("NFD");
+  const lemmaNfd = new Set(lemmas.map((l) => nfd(l.ar)));
+  for (const w of curated.feminine) if (!lemmaNfd.has(nfd(w))) throw new Error(`curated feminine lemma not found: ${w}`);
+  const femNfd = new Set(curated.feminine.map(nfd));
+  const bare = (x) => x.replace(/[\u064B-\u065F\u0670]/g, "");
+  for (const l of lemmas) {
+    const curatedFem = femNfd.has(nfd(l.ar));
+    if (curatedFem) l.g.gender = "F";
+    else if (l.g.gender === "F" && !/(\u0629|\u0649|\u0627\u0621)$/.test(bare(l.ar))) delete l.g.gender;
+  }
 
   const verseOf = new Map();
   for (const { c, verses } of surahs) for (const v of verses) verseOf.set(`${c}:${v.n}`, v);
@@ -223,6 +311,55 @@ async function main() {
     }));
     await fs.writeFile(path.join(OUT, "surah", `${c}.json`), JSON.stringify(compact));
   }
+  // ---- deep word study files: root family + curated synonyms/antonyms ----
+  // NFD puts stacked diacritics (shadda + vowel) in canonical order, so typed spellings match the corpus.
+  const idByNfd = new Map([...idOf].map(([k, id]) => [k.normalize("NFD"), id]));
+  const resolve = (lem) => {
+    const id = idByNfd.get(lem.normalize("NFD"));
+    if (!id) throw new Error(`curated lemma not found in corpus: ${lem}`);
+    return id;
+  };
+  const ant = new Map();
+  const syn = new Map();
+  const link = (map, a, b) => {
+    if (!map.has(a)) map.set(a, new Set());
+    map.get(a).add(b);
+  };
+  for (const [a, b] of curated.antonyms) {
+    const [x, y] = [resolve(a), resolve(b)];
+    link(ant, x, y);
+    link(ant, y, x);
+  }
+  for (const group of curated.synonyms) {
+    const ids = group.map(resolve);
+    for (const x of ids) for (const y of ids) if (x !== y) link(syn, x, y);
+  }
+  const byRoot = new Map();
+  for (const l of lemmas) if (l.root) (byRoot.get(l.root) ?? byRoot.set(l.root, []).get(l.root)).push(l);
+  // relation tuple: [id, arabic, bangla, english, freq]
+  const rel = (id) => {
+    const l = lemmas[id - 1];
+    return [l.id, l.ar, l.bn, l.en, l.freq];
+  };
+
+  await fs.mkdir(path.join(OUT, "word"), { recursive: true });
+  const daily = [];
+  for (const l of lemmas) {
+    if (l.freq < WORD_PAGE_MIN_FREQ) continue;
+    const family = (byRoot.get(l.root) ?? []).filter((x) => x.id !== l.id).slice(0, MAX_FAMILY).map((x) => rel(x.id));
+    const detail = {
+      id: l.id, ar: l.ar, tr: l.tr, bn: l.bn, en: l.en, root: l.root, freq: l.freq, g: l.g,
+      forms: l.forms,
+      family,
+      ant: [...(ant.get(l.id) ?? [])].map(rel),
+      syn: [...(syn.get(l.id) ?? [])].map(rel),
+      examples: l.refs.map(example),
+    };
+    await fs.writeFile(path.join(OUT, "word", `${l.id}.json`), JSON.stringify(detail));
+    if (l.root && ["noun", "adj", "verb"].includes(l.g.kind)) daily.push(l.id);
+  }
+  await fs.writeFile(path.join(OUT, "daily.json"), JSON.stringify(daily));
+
   await fs.writeFile(
     path.join(BUILD_OUT, "stats.json"),
     JSON.stringify({ totalWords, lemmas: lemmas.length, lessons: lessonIndex.length, lessonSize: LESSON_SIZE }),

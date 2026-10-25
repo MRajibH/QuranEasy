@@ -21,14 +21,14 @@ export interface CardWord {
 /** Location "s:a:w" of the highlighted word in an example (used for audio). */
 export const exampleLocation = (ex: Example) => `${ex.ref}:${ex.hi + 1}`;
 
-export function ExampleAyah({ ex }: { ex: Example }) {
+export function ExampleAyah({ ex, caption = true }: { ex: Example; caption?: boolean }) {
   const { locale, t } = useLocale();
   const { meaning } = useSettings();
   const lang = meaning === "both" ? locale : meaning;
   const [s, a] = ex.ref.split(":");
   return (
     <figure className="rounded-2xl bg-surface-2/70 p-4 text-center">
-      <figcaption className="text-sm font-semibold text-muted mb-1">{t.learn.example}</figcaption>
+      {caption && <figcaption className="text-sm font-semibold text-muted mb-1">{t.learn.example}</figcaption>}
       <p className="font-arabic ar-md" lang="ar" dir="rtl">
         {ex.w.map((w, i) => (
           <span key={i}>

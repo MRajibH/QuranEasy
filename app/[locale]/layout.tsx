@@ -73,6 +73,7 @@ export default async function LocaleLayout({
             <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-muted flex flex-col md:flex-row gap-4 md:items-center">
               <p className="flex-1">{t.footer.niyyah}</p>
               <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer">
+                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/daily/`}>{t.nav.daily}</Link>
                 <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/practice/`}>{t.nav.practice}</Link>
                 <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/search/`}>{t.nav.search}</Link>
                 <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/about/`}>{t.nav.about}</Link>

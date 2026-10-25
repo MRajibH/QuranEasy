@@ -29,3 +29,5 @@ export function loadLemmaMap() {
   byId ??= loadLemmas().then((ls) => new Map(ls.map((l) => [l[0], l])));
   return byId;
 }
+export const loadDaily = () => load<number[]>("/data/daily.json");
+export const loadWord = (id: number) => load<import("./types").WordDetail>(`/data/word/${id}.json`);

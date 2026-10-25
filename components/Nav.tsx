@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, GraduationCap, Home, Repeat, Search, Settings } from "lucide-react";
+import { BarChart3, BookOpen, GraduationCap, Home, Repeat, Search, Settings, Sparkles } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { Logo } from "./Logo";
 import { useDueCount } from "@/lib/progress";
@@ -65,6 +65,14 @@ export function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-1">
+          <Link
+            href={`/${locale}/daily/`}
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-accent hover:bg-accent-soft"
+            aria-label={t.nav.daily}
+            title={t.nav.daily}
+          >
+            <Sparkles className="w-5 h-5" />
+          </Link>
           <Link
             href={`/${locale}/search/`}
             className="w-11 h-11 rounded-xl flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text"

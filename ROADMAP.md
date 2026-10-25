@@ -49,16 +49,16 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [ ] Polished mobile layout (no awkward wrapping), larger Arabic on phones
 - [ ] Dark-mode polish and contrast review
 
-## Phase 7 — Daily words, mastered inside-out (Bangla first) 🚧
-- [ ] **আজকের শব্দ (Words of the Day):** 2 new words every day, same for everyone (shareable)
-- [ ] Deep word study, Bangla first:
-  - [ ] লিঙ্গ (gender): পুংলিঙ্গ / স্ত্রীলিঙ্গ — মুযাক্কার / মুয়ান্নাস
-  - [ ] বচন (number): একবচন / দ্বিবচন / বহুবচন with real forms from the Qur'an
-  - [ ] শব্দের ধরন: ক্রিয়া, বিশেষ্য, বিশেষণ, ইসমে ফায়েল, ইসমে মাফউল, মাসদার, verb form (বাব)
-  - [ ] একই মূলের শব্দ (root family)
-  - [ ] সমার্থক ও বিপরীত শব্দ (synonyms / antonyms) — curated, well-established Qur'anic pairs only
-- [ ] **Word-wise progress:** “কুরআনের ৭৭,৪২৯ শব্দের মধ্যে আপনি ___টি চেনেন (__%)”
-- [ ] Root URL always opens Bangla first
+## Phase 7 — Daily words, mastered inside-out (Bangla first) ✅
+- [x] **আজকের শব্দ (Words of the Day):** 2 new words every day — the most frequent content words you haven't started, never repeated
+- [x] Deep word study (also on every word page), Bangla first with Arabic grammar terms:
+  - [x] লিঙ্গ: পুংলিঙ্গ (মুযাক্কার) / স্ত্রীলিঙ্গ (মুয়ান্নাস) — shown only when trustworthy (feminine marker or curated list)
+  - [x] বচন: একবচন / দ্বিবচন / বহুবচন with real forms from the Qur'an; verbs: মাযী / মুযারে / আমর
+  - [x] শব্দের ধরন: ইসম, সিফাত, ফে'ল, ইসমে ফায়েল, ইসমে মাফউল, মাসদার, বাব (verb form)
+  - [x] একই মূলের শব্দ (root family)
+  - [x] সমার্থক ও বিপরীত শব্দ — curated in `data/curated/relations.json` (39 antonym pairs, 11 synonym groups)
+- [x] **Word-wise progress:** “কুরআনের ৭৭,৪২৯ শব্দের মধ্যে আপনি ___টি চেনেন (__%)” on Today and Progress
+- [x] Root URL always opens Bangla first
 
 ## Phase 8 — Content quality ⏳
 - [ ] Scholar review of the top 500 Bangla base meanings; `data/overrides.json` for corrections

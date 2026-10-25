@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "",
     "learn/",
+    "daily/",
     "read/",
     "practice/",
     "search/",

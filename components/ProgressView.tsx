@@ -38,6 +38,7 @@ function useDashboard() {
       lessons,
       coverage: coveragePct(cards.map((c) => map.get(c.id)?.[5] ?? 0), TOTAL_WORDS),
       mastered: coveragePct(known.map((c) => map.get(c.id)?.[5] ?? 0), TOTAL_WORDS),
+      words: cards.reduce((s, c) => s + (map.get(c.id)?.[5] ?? 0), 0),
       streak: streak(new Set(perDay.keys())),
       perDay,
       forecast,
@@ -143,7 +144,7 @@ export function ProgressView() {
           <ProgressRing pct={data.coverage} size={180} stroke={16}>
             <span className="text-4xl font-bold text-primary">{num(locale, data.coverage)}%</span>
           </ProgressRing>
-          <h2 className="font-bold text-lg">{t.progress.coverage}</h2>
+          <h2 className="font-bold text-lg">{t.progress.wordsKnown(num(locale, data.words), num(locale, TOTAL_WORDS))}</h2>
           <p className="text-sm text-muted">{t.progress.coverageText(num(locale, data.coverage))}</p>
           <p className="text-sm font-semibold text-success">{t.progress.mastered(num(locale, data.mastered))}</p>
         </div>
