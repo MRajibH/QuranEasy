@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Play, Square } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { WordSheet, type SheetWord } from "./WordSheet";
-import { LoadError, Spinner } from "./ui";
+import { LoadError, ProgressBar, Spinner } from "./ui";
 import { playWord, stopAudio } from "@/lib/audio";
 import { loadLemmaMap, loadSurah } from "@/lib/data";
 import { useCardStatus } from "@/lib/progress";
@@ -103,6 +104,12 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
     );
   }
 
+  // Understanding: share of words whose base word the learner has started.
+  const knownIn = (v: Verse) => v.w.reduce((s, w) => s + (status?.has(w[4]) ? 1 : 0), 0);
+  const totalWords = verses.reduce((s, v) => s + v.w.length, 0);
+  const totalKnown = verses.reduce((s, v) => s + knownIn(v), 0);
+  const surahPct = totalWords ? Math.round((totalKnown / totalWords) * 100) : 0;
+
   const toggles: [keyof View, string][] = [
     ["meanings", t.read.wordMeanings],
     ["translation", t.read.translation],
@@ -133,8 +140,25 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
         </span>
       </div>
 
+      {status && (
+        <div className="card p-4 mb-4 flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-52">
+            <p className="font-semibold">{t.read.understandSurah(num(locale, surahPct))}</p>
+            <p className="text-sm text-muted">{t.read.knownOf(num(locale, totalKnown), num(locale, totalWords))}</p>
+            <ProgressBar value={totalKnown} max={totalWords} className="mt-2" />
+          </div>
+          {surahPct < 100 && (
+            <Link href={`/${locale}/decks/s${n}/`} className="btn btn-secondary">
+              {t.decks.learnSurah}
+            </Link>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-4">
-        {verses.map((v) => (
+        {verses.map((v) => {
+          const known = knownIn(v);
+          return (
           <section key={v.n} id={`v${v.n}`} className="verse card p-4 md:p-6 scroll-mt-32">
             <div className="flex flex-wrap gap-x-3 gap-y-4 justify-start" dir="rtl" lang="ar">
               {v.w.map((w, i) => {
@@ -182,6 +206,16 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
                 {playing?.v === v.n ? <Square className="w-4 h-4" aria-hidden /> : <Play className="w-4 h-4" aria-hidden />}
                 <span className="hidden sm:inline">{playing?.v === v.n ? t.read.stop : t.read.playWords}</span>
               </button>
+              {status && (
+                <span
+                  className={`shrink-0 h-11 px-3 rounded-full inline-flex items-center text-sm font-semibold ${
+                    known === v.w.length ? "bg-success-soft text-success" : "bg-surface-2 text-muted"
+                  }`}
+                  title={t.read.knownOf(num(locale, known), num(locale, v.w.length))}
+                >
+                  {num(locale, known)}/{num(locale, v.w.length)}
+                </span>
+              )}
               {view.translation && (
                 <p className="text-lg flex-1" lang={lang}>
                   <span className="font-bold text-primary mr-2">{num(locale, v.n)}.</span>
@@ -190,7 +224,8 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
               )}
             </div>
           </section>
-        ))}
+          );
+        })}
       </div>
       <p className="mt-4 text-sm text-muted text-center">{lang === "bn" ? "অনুবাদ: তাইসীরুল কুরআন" : "Translation: Saheeh International"}</p>
       <WordSheet word={sheet} onClose={() => setSheet(null)} />

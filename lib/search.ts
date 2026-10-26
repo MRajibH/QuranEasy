@@ -12,6 +12,9 @@ export function normalizeArabic(s: string) {
     .replace(/\s+/g, "");
 }
 
+/** Arabic letters only (no diacritics or alif/hamza variants) — for telling two words apart. */
+export const skeletonOf = (s: string) => normalizeArabic(s).replace(/[\u0627\u0621\u0624\u0626]/g, "");
+
 export function normalizeLatin(s: string) {
   return s
     .toLowerCase()

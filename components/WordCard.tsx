@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale } from "./LocaleProvider";
 import { AudioButton, Meaning } from "./ui";
 import { AyahWords } from "./AyahWords";
+import { ReportMistake } from "./ReportMistake";
 import { useSettings } from "@/lib/settings";
 import { num } from "@/lib/i18n";
 import { WORD_PAGE_MIN_FREQ } from "@/lib/constants";
@@ -81,6 +82,9 @@ export function WordCard({ word, ex, audioLoc }: { word: CardWord; ex?: Example;
           {t.common.seeWord}
         </Link>
       )}
+      <div className="mt-3">
+        <ReportMistake id={word.id} ar={word.ar} bn={word.bn} en={word.en} locale={locale} />
+      </div>
     </div>
   );
 }

@@ -45,7 +45,7 @@ serve that folder as static assets (no server, no Next.js adapter).
 
 1. Cloudflare dashboard → Workers & Pages → Create → Import a repository → pick `MRajibH/QuranEasy`.
 2. Build command: `npm run build` · Deploy command: `npx wrangler deploy` (the defaults Cloudflare suggests).
-3. Variables: `NODE_VERSION` = `22`, and `NEXT_PUBLIC_SITE_URL` = your final URL (used for the sitemap and
+3. Variables: `NODE_VERSION` = `22`, and `NEXT_PUBLIC_SITE_URL` = your final URL, e.g. `https://quraneasy.rajib.uk` (used for the sitemap and
    social previews).
 4. Save and deploy. Every push to `main` redeploys automatically.
 

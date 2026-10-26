@@ -36,8 +36,9 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [x] Cloudflare `_headers`, file-count guard for the free tier (20k files)
 - [x] About (method, sources, privacy), Support pages; unit tests
 
-## Phase 5 — Deploy ⏳ (owner action)
-- [ ] Connect GitHub repo to Cloudflare Pages (see README → Deploy)
+## Phase 5 — Deploy ✅
+- [x] Live at https://quraneasy.rajib.uk (Cloudflare, auto-deploys from main)
+- [ ] Add the site to Google Search Console and submit /sitemap.xml
 - [ ] Optional: custom domain, Cloudflare Web Analytics (cookie-less)
 - [ ] Beta with family/masjid group, collect feedback
 
@@ -75,5 +76,10 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [x] **Exact pronunciation everywhere:** every base word plays its own recitation standing alone; every word in
       the reader and in example ayat is tappable; “listen word by word” per ayah with highlighting; play
       buttons on forms, root family, synonyms/antonyms and search results
+- [x] **Ayah understanding:** surah and per-ayah “words you know” in the reader; “Complete the ayah” practice game
+- [x] Shareable progress image (“আমি কুরআনের __% শব্দ চিনি”) via the phone's share sheet
+- [x] Report-a-mistake on every word; hand-reviewed base meanings in `data/curated/meanings.json`
+- [x] Modern home: Today first, quick actions to every way of learning; floating bottom navigation
+- [x] Canonical domain https://quraneasy.rajib.uk for sitemap and social previews
 - [ ] Optional cloud sync (Cloudflare D1) only if users ask
 - [ ] More languages (Urdu, Indonesian)

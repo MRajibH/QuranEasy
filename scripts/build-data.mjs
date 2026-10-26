@@ -244,6 +244,16 @@ async function main() {
       .map(([ar, { single, ...f }]) => ({ ar, ...f })),
   }));
 
+  // Hand-reviewed base meanings override the automatically chosen ones.
+  const meaningFixes = await readJson(path.resolve("data/curated/meanings.json"));
+  const lemmaByNfd = new Map(lemmas.map((l) => [l.ar.normalize("NFD"), l]));
+  for (const [lem, fix] of Object.entries(meaningFixes)) {
+    if (lem.startsWith("_")) continue;
+    const l = lemmaByNfd.get(lem.normalize("NFD"));
+    if (!l) throw new Error(`meanings.json: lemma not found in corpus: ${lem}`);
+    [l.bn, l.en] = fix;
+  }
+
   // Gender: masculine tags are kept; feminine is shown only with a feminine marker (ة / ى / اء)
   // or for curated unmarked feminine nouns, because the corpus tag alone is unreliable (e.g. قَلْب).
   const curated = await readJson(path.resolve("data/curated/relations.json"));

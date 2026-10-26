@@ -6,6 +6,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { BookCheck, Download, Flame, GraduationCap, Repeat, Trash2, Upload } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { PageTitle, ProgressBar, ProgressRing, Spinner } from "./ui";
+import { ShareProgress } from "./ShareProgress";
 import { db, exportBackup, importBackup, resetAll } from "@/lib/db";
 import { loadLemmaMap } from "@/lib/data";
 import { State } from "@/lib/srs";
@@ -147,6 +148,9 @@ export function ProgressView() {
           <h2 className="font-bold text-lg">{t.progress.wordsKnown(num(locale, data.words), num(locale, TOTAL_WORDS))}</h2>
           <p className="text-sm text-muted">{t.progress.coverageText(num(locale, data.coverage))}</p>
           <p className="text-sm font-semibold text-success">{t.progress.mastered(num(locale, data.mastered))}</p>
+          {data.total > 0 && (
+            <ShareProgress stats={{ pct: data.coverage, words: data.words, streak: data.streak }} className="mt-2" />
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
           {tiles.map(({ label, value, Icon, cls }) => (

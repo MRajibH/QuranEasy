@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
 import { WordActions } from "@/components/WordActions";
 import { WordStudy } from "@/components/WordStudy";
 import { AyahWords } from "@/components/AyahWords";
+import { ReportMistake } from "@/components/ReportMistake";
 import { getDict, LOCALES, num } from "@/lib/i18n";
 import { getLemma, getLemmas, getWordDetail, wordPageIds } from "@/lib/server-data";
 import { grammarChips } from "@/lib/grammar";
@@ -96,6 +97,9 @@ export default async function WordPage({ params }: { params: Params }) {
         <Link href={`/${locale}/lesson/?n=${lesson}`} className="btn btn-primary btn-lg mt-4">
           <GraduationCap className="w-5 h-5" aria-hidden /> {t.word.inLesson(num(locale, lesson))}
         </Link>
+        <div className="mt-4">
+          <ReportMistake id={id} ar={l.ar} bn={detail.bn} en={detail.en} locale={locale} />
+        </div>
       </header>
 
       <WordStudy word={detail} locale={locale} />

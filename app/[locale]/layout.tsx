@@ -66,10 +66,10 @@ export default async function LocaleLayout({
           </a>
           <ClientInit />
           <Header />
-          <main id="main" className="flex-1 w-full mx-auto max-w-5xl px-4 pt-6 pb-28 md:pb-12">
+          <main id="main" className="flex-1 w-full mx-auto max-w-5xl px-4 pt-6 pb-32 md:pb-12">
             {children}
           </main>
-          <footer className="border-t border-border pb-24 md:pb-0">
+          <footer className="border-t border-border pb-28 md:pb-0">
             <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-muted flex flex-col md:flex-row gap-4 md:items-center">
               <p className="flex-1">{t.footer.niyyah}</p>
               <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer">

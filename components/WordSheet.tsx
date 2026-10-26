@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { Check, Plus, X } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { AudioButton, Meaning } from "./ui";
+import { ReportMistake } from "./ReportMistake";
 import { addToReview, useCard } from "@/lib/progress";
 import { isKnown } from "@/lib/srs";
 import { useSettings } from "@/lib/settings";
@@ -101,6 +102,9 @@ function SheetBody({ word, onClose }: { word: SheetWord; onClose: () => void }) 
           {t.common.seeWord}
         </Link>
       )}
+      <div className="text-center mt-2">
+        <ReportMistake id={id} ar={ar} bn={bn} en={en} locale={locale} />
+      </div>
     </div>
   );
 }

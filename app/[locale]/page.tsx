@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Brain, Layers, Repeat, Target } from "lucide-react";
 import { TodayPanel } from "@/components/TodayPanel";
 import { DailyCard } from "@/components/DailyWords";
+import { QuickActions } from "@/components/QuickActions";
 import { getDict, num } from "@/lib/i18n";
 import { getVerse } from "@/lib/server-data";
 import { TOTAL_LEMMAS, TOTAL_LESSONS, TOTAL_WORDS } from "@/lib/constants";
@@ -21,22 +22,28 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
 
   return (
     <div className="grid gap-10">
-      <section className="hero px-6 py-8 md:px-12 md:py-10 text-center">
+      <section className="hero px-6 py-7 md:px-10 md:py-9">
         <p className="text-gold font-semibold tracking-wide">{t.home.welcome}</p>
-        <h1 className="mt-2 text-3xl md:text-5xl font-bold leading-tight text-white">{t.home.heroTitle}</h1>
-        <p className="mt-4 text-lg text-white/80 max-w-2xl mx-auto">{t.home.heroText}</p>
-        <figure className="mt-6 max-w-2xl mx-auto">
-          <p className="font-arabic ar-md text-gold" lang="ar" dir="rtl">
-            {ayah.w.map((w) => w[0]).join(" ")}
-          </p>
-          <figcaption className="mt-2 text-white/75" lang={locale}>
-            {locale === "bn" ? ayah.bn : ayah.en}
-            <span className="block text-sm text-white/55 mt-1">
-              {locale === "bn" ? "সূরা আল-ক্বামার ৫৪:১৭" : "Surah Al-Qamar 54:17"}
-            </span>
-          </figcaption>
-        </figure>
-        <dl className="mt-6 hidden sm:grid grid-cols-3 gap-2 max-w-lg mx-auto">
+        <h1 className="mt-1 text-3xl md:text-4xl font-bold leading-tight text-white">{t.home.heroTitle}</h1>
+        <p className="mt-3 text-white/80 max-w-2xl md:text-lg">{t.home.heroText}</p>
+      </section>
+
+      <div className="grid gap-4 -mt-4">
+        <TodayPanel />
+        <DailyCard />
+      </div>
+
+      <QuickActions locale={locale} />
+
+      <section className="hero px-6 py-8 md:px-12 md:py-10 text-center" aria-label="Qur'an 54:17">
+        <p className="font-arabic ar-md text-gold" lang="ar" dir="rtl">
+          {ayah.w.map((w) => w[0]).join(" ")}
+        </p>
+        <p className="mt-2 text-white/80 text-lg" lang={locale}>
+          {locale === "bn" ? ayah.bn : ayah.en}
+        </p>
+        <p className="text-sm text-white/55 mt-1">{locale === "bn" ? "সূরা আল-ক্বামার ৫৪:১৭" : "Surah Al-Qamar 54:17"}</p>
+        <dl className="mt-6 grid grid-cols-3 gap-2 max-w-lg mx-auto">
           {[
             [TOTAL_WORDS, t.home.statWords],
             [TOTAL_LEMMAS, t.home.statLemmas],
@@ -50,11 +57,6 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
           ))}
         </dl>
       </section>
-
-      <div className="grid gap-4 -mt-4">
-        <TodayPanel />
-        <DailyCard />
-      </div>
 
       <section aria-labelledby="how">
         <h2 id="how" className="text-2xl font-bold mb-4">{t.home.howTitle}</h2>

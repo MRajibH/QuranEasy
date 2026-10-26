@@ -1,7 +1,7 @@
 import stats from "@/data/stats.json";
 
 export const SITE_NAME = "QuranEasy";
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://quraneasy.pages.dev").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://quraneasy.rajib.uk").replace(/\/$/, "");
 export const REPO_URL = "https://github.com/MRajibH/QuranEasy";
 
 export const TOTAL_WORDS: number = stats.totalWords;

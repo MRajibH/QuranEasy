@@ -108,7 +108,7 @@ export function BottomNav() {
   const items = useItems();
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.18)]"
+      className="md:hidden fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 rounded-3xl bg-surface/95 backdrop-blur border border-border shadow-[var(--shadow-lg)]"
       aria-label="Main"
     >
       <ul className="grid grid-cols-5">
@@ -118,7 +118,7 @@ export function BottomNav() {
             <li key={href}>
               <Link
                 href={href}
-                className={`relative flex flex-col items-center justify-center gap-0.5 h-16 text-[0.78rem] font-semibold ${
+                className={`relative flex flex-col items-center justify-center gap-0.5 h-[4.25rem] text-[0.78rem] font-semibold ${
                   active ? "text-primary" : "text-muted"
                 }`}
                 aria-current={active ? "page" : undefined}
