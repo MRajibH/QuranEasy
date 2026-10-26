@@ -1,0 +1,12 @@
+{
+  // Static site: `npm run build` writes everything to out/, and Cloudflare serves it as static assets.
+  // Without this file `wrangler deploy` auto-detects Next.js and tries a server (OpenNext) build, which fails.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "quraneasy",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./out",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
