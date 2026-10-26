@@ -1,7 +1,7 @@
 import "server-only";
 import fs from "node:fs";
 import path from "node:path";
-import type { Lemma, SurahInfo, Verse, WordDetail } from "./types";
+import type { DeckIndexItem, Lemma, SurahInfo, Verse, WordDetail } from "./types";
 import { WORD_PAGE_MIN_FREQ } from "./constants";
 
 // Build-time data access for static pages. Everything is read once and cached in memory.
@@ -52,4 +52,8 @@ export function getWordDetail(id: number): WordDetail | undefined {
   } catch {
     return undefined;
   }
+}
+
+export function getDeckIndex(): DeckIndexItem[] {
+  return readJson<DeckIndexItem[]>("data/decks.json");
 }

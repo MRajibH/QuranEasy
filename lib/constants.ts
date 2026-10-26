@@ -21,3 +21,7 @@ export const lemmaIdsOfLesson = (lesson: number) => {
   const to = Math.min(lesson * LESSON_SIZE, TOTAL_LEMMAS);
   return Array.from({ length: to - from + 1 }, (_, i) => from + i);
 };
+
+export const DECK_PART_SIZE = 10;
+export const JUZ_AMMA = { id: "juz30", from: 78, to: 114 };
+export const deckParts = (unique: number) => Math.ceil(unique / DECK_PART_SIZE);

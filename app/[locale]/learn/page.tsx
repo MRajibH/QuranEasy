@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LessonPath, type PathLesson } from "@/components/LessonPath";
 import { PageTitleStatic } from "@/components/PageTitleStatic";
+import { LearnTabs } from "@/components/LearnTabs";
 import { getDict } from "@/lib/i18n";
 import { getLemmas } from "@/lib/server-data";
 import { LESSON_SIZE, TOTAL_LESSONS, TOTAL_WORDS } from "@/lib/constants";
@@ -34,6 +35,7 @@ export default async function LearnPage({ params }: { params: Promise<{ locale: 
   }
   return (
     <>
+      <LearnTabs locale={locale} active="path" />
       <PageTitleStatic title={t.learn.title} subtitle={t.learn.subtitle} />
       <LessonPath lessons={lessons} />
     </>

@@ -87,3 +87,21 @@ export interface WordDetail {
   syn: Relation[];
   examples: Example[];
 }
+
+export interface DeckWord extends LessonWord {
+  /** occurrences inside this deck */
+  sfreq: number;
+}
+
+/** Surah deck ("s1"…"s114") or Juz ʿAmma ("juz30"), from /data/decks/ID.json */
+export interface Deck {
+  id: string;
+  total: number;
+  words: DeckWord[];
+}
+
+export interface DeckIndexItem {
+  id: string;
+  total: number;
+  unique: number;
+}

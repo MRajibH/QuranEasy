@@ -5,19 +5,52 @@ import { db, type CardRow } from "./db";
 import { newCard, schedule, State, type Grade } from "./srs";
 import { dayKey } from "./stats";
 
-/** Saves the result of a finished lesson: creates a card per word graded by the quiz. */
-export async function completeLesson(lessonId: number, results: { lemmaId: number; grade: Grade }[]) {
+export type StudyResult = { lemmaId: number; grade: Grade };
+
+/** Creates a card per newly learned word, graded by the quiz. Words already being learned are left alone. */
+async function learnWords(results: StudyResult[], now: Date) {
+  const d = db();
+  for (const { lemmaId, grade } of results) {
+    if (await d.cards.get(lemmaId)) continue; // already learning (e.g. from another lesson or deck)
+    const card = schedule(newCard(now), grade, now);
+    await d.cards.put({ ...card, id: lemmaId, added: now.getTime() });
+    await d.logs.add({ lemmaId, rating: grade, ts: now.getTime(), day: dayKey(now), kind: "learn" });
+  }
+}
+
+/** Saves the result of a finished frequency lesson. */
+export async function completeLesson(lessonId: number, results: StudyResult[]) {
   const d = db();
   const now = new Date();
   await d.transaction("rw", d.cards, d.logs, d.lessons, async () => {
-    for (const { lemmaId, grade } of results) {
-      if (await d.cards.get(lemmaId)) continue; // already learning (e.g. added from reader)
-      const card = schedule(newCard(now), grade, now);
-      await d.cards.put({ ...card, id: lemmaId, added: now.getTime() });
-      await d.logs.add({ lemmaId, rating: grade, ts: now.getTime(), day: dayKey(now), kind: "learn" });
-    }
+    await learnWords(results, now);
     await d.lessons.put({ id: lessonId, done: now.getTime() });
   });
+}
+
+/** Saves the result of a finished part of a surah deck. */
+export async function completeDeckPart(deck: string, part: number, results: StudyResult[]) {
+  const d = db();
+  const now = new Date();
+  await d.transaction("rw", d.cards, d.logs, d.parts, async () => {
+    await learnWords(results, now);
+    await d.parts.put({ id: `${deck}:${part}`, deck, done: now.getTime() });
+  });
+}
+
+export function useCompletedParts(deck: string) {
+  return useLiveQuery(
+    async () => new Set((await db().parts.where("deck").equals(deck).toArray()).map((p) => Number(p.id.split(":")[1]))),
+    [deck],
+  );
+}
+
+export async function completeGrammar(slug: string) {
+  await db().grammar.put({ id: slug, done: Date.now() });
+}
+
+export function useCompletedGrammar() {
+  return useLiveQuery(async () => new Set((await db().grammar.toArray()).map((g) => g.id)), []);
 }
 
 export async function reviewCard(row: CardRow, grade: Grade) {

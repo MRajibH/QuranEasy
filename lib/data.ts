@@ -31,3 +31,4 @@ export function loadLemmaMap() {
 }
 export const loadDaily = () => load<number[]>("/data/daily.json");
 export const loadWord = (id: number) => load<import("./types").WordDetail>(`/data/word/${id}.json`);
+export const loadDeck = (id: string) => load<import("./types").Deck>(`/data/decks/${id}.json`);

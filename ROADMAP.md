@@ -65,8 +65,12 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [ ] Expand curated synonyms/antonyms with review
 - [ ] Report-a-mistake link on every word
 
-## Phase 9 — Growth ⏳
-- [ ] Surah-focused decks (e.g. Juz ʿAmma, Al-Fatiha first)
-- [ ] Grammar mini-lessons (pronoun suffixes, verb forms I–X)
+## Phase 9 — Surah decks & grammar 🚧
+- [x] **সূরা ধরে শিখুন (surah decks):** Al-Fatiha and Juz ʿAmma featured, plus every surah; 10-word parts,
+      examples taken from the surah itself, “এই সূরার __% শব্দ আপনি চেনেন”
+- [x] Entry points: Learn tabs, “learn this surah's words” in the reader, Al-Fatiha option in onboarding
+- [x] **সহজ আরবি ব্যাকরণ:** 12 Bangla-first mini-lessons (word types, roots, ال, gender, number, attached and
+      separate pronouns, tenses, past endings, present prefixes, participles, particles) with quizzes
+- [x] Every grammar example verified to occur in the Qur'an (unit test) and shown in Uthmani script with audio
 - [ ] Optional cloud sync (Cloudflare D1) only if users ask
 - [ ] More languages (Urdu, Indonesian)

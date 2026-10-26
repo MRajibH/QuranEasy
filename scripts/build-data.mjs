@@ -6,6 +6,8 @@
 //   public/data/surah/N.json     – word-by-word text for one surah, each word linked to a lemma
 //   public/data/word/ID.json     – deep study data for one lemma (grammar, root family, synonyms/antonyms)
 //   public/data/daily.json       – content words eligible as "Words of the Day", by frequency
+//   public/data/decks/ID.json    – surah decks (s1…s114) and Juz ʿAmma (juz30) for surah-focused study
+//   data/decks.json              – deck index (build-time)
 // Lemma ids are frequency ranks, so lesson N always holds ids (N-1)*LESSON_SIZE+1 … N*LESSON_SIZE.
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -359,6 +361,52 @@ async function main() {
     if (l.root && ["noun", "adj", "verb"].includes(l.g.kind)) daily.push(l.id);
   }
   await fs.writeFile(path.join(OUT, "daily.json"), JSON.stringify(daily));
+
+  // ---- surah decks (+ Juz ʿAmma): every lemma in the deck, most used in that deck first ----
+  await fs.mkdir(path.join(OUT, "decks"), { recursive: true });
+  // Long ayat are cut to a window around the word (translation dropped) to keep deck files small.
+  const DECK_EX_MAX = 14;
+  const DECK_EX_SIDE = 4;
+  const deckExample = (loc) => {
+    const ex = example(loc);
+    if (ex.w.length <= DECK_EX_MAX) return ex;
+    const from = Math.max(0, ex.hi - DECK_EX_SIDE);
+    const to = Math.min(ex.w.length, ex.hi + DECK_EX_SIDE + 1);
+    const w = [...(from > 0 ? ["…"] : []), ...ex.w.slice(from, to), ...(to < ex.w.length ? ["…"] : [])];
+    return { ref: ex.ref, w, hi: ex.hi - from + (from > 0 ? 1 : 0), en: "", bn: "" };
+  };
+  const buildDeck = (id, chapterNums) => {
+    const stats = new Map(); // lemmaId -> { n, first, loc }
+    let total = 0;
+    let order = 0;
+    for (const c of chapterNums) {
+      for (const v of surahs[c - 1].verses) {
+        v.words.forEach((w, i) => {
+          const lid = idOf.get(w.key);
+          total++;
+          const st = stats.get(lid) ?? { n: 0, first: order, loc: `${c}:${v.n}:${i + 1}` };
+          st.n++;
+          stats.set(lid, st);
+          order++;
+        });
+      }
+    }
+    const words = [...stats.entries()]
+      .sort((a, b) => b[1].n - a[1].n || a[1].first - b[1].first)
+      .map(([lid, st]) => {
+        const l = lemmas[lid - 1];
+        return { id: l.id, ar: l.ar, root: l.root, pos: l.pos, freq: l.freq, bn: l.bn, en: l.en, tr: l.tr, sfreq: st.n, ex: deckExample(st.loc) };
+      });
+    return { id, total, words };
+  };
+  const deckIndex = [];
+  const writeDeck = async (deck) => {
+    await fs.writeFile(path.join(OUT, "decks", `${deck.id}.json`), JSON.stringify(deck));
+    deckIndex.push({ id: deck.id, total: deck.total, unique: deck.words.length });
+  };
+  await writeDeck(buildDeck("juz30", Array.from({ length: 37 }, (_, i) => 78 + i)));
+  for (let c = 1; c <= 114; c++) await writeDeck(buildDeck(`s${c}`, [c]));
+  await fs.writeFile(path.join(BUILD_OUT, "decks.json"), JSON.stringify(deckIndex));
 
   await fs.writeFile(
     path.join(BUILD_OUT, "stats.json"),

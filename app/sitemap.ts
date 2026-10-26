@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { LOCALES } from "@/lib/i18n";
-import { wordPageIds } from "@/lib/server-data";
+import { getDeckIndex, wordPageIds } from "@/lib/server-data";
+import { GRAMMAR_LESSONS } from "@/lib/grammar-lessons";
 import { SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-static";
@@ -10,6 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "learn/",
     "daily/",
+    "decks/",
+    "grammar/",
+    ...GRAMMAR_LESSONS.map((l) => `grammar/${l.slug}/`),
+    ...getDeckIndex().map((d) => `decks/${d.id}/`),
     "read/",
     "practice/",
     "search/",

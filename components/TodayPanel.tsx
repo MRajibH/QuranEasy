@@ -82,6 +82,13 @@ function Onboarding() {
       >
         {t.home.startFirst} <ArrowRight className="w-5 h-5" aria-hidden />
       </Link>
+      <Link
+        href={`/${locale}/decks/s1/?p=1`}
+        onClick={() => updateSettings({ onboarded: true })}
+        className="btn btn-ghost w-full mt-2"
+      >
+        {t.decks.orFatiha}
+      </Link>
     </section>
   );
 }

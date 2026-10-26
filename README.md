@@ -38,17 +38,23 @@ npm run data:build   # writes data/lemmas.json, public/data/**
 npm run icons        # regenerates icons and og.png
 ```
 
-## Deploy (Cloudflare Pages, free)
+## Deploy (Cloudflare, free)
 
-1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick `MRajibH/QuranEasy`.
-2. Build settings: Framework preset **None**, build command `npm run build`, output directory `out`.
-3. Environment variables: `NODE_VERSION` = `22`, and `NEXT_PUBLIC_SITE_URL` = your final URL
-   (e.g. `https://quraneasy.pages.dev`), used for the sitemap and social previews.
+The site is fully static: `npm run build` writes it to `out/`, and `wrangler.jsonc` tells Cloudflare to
+serve that folder as static assets (no server, no Next.js adapter).
+
+1. Cloudflare dashboard → Workers & Pages → Create → Import a repository → pick `MRajibH/QuranEasy`.
+2. Build command: `npm run build` · Deploy command: `npx wrangler deploy` (the defaults Cloudflare suggests).
+3. Variables: `NODE_VERSION` = `22`, and `NEXT_PUBLIC_SITE_URL` = your final URL (used for the sitemap and
+   social previews).
 4. Save and deploy. Every push to `main` redeploys automatically.
 
-Optional: add a custom domain and turn on Cloudflare Web Analytics (cookie-less) in the Pages project.
+Classic Pages projects work too: build command `npm run build`, output directory `out`.
 
-The export is ~9,600 files, well within the free tier's 20,000-file limit; `npm run build` fails loudly if a
+Do not let Cloudflare set up OpenNext / `@opennextjs/cloudflare` for this project — that is for server-rendered
+Next.js apps and fails on a static export. The committed `wrangler.jsonc` prevents that auto-setup.
+
+The export is ~12,300 files, within the free tier's 20,000-file limit; `npm run build` fails loudly if a
 future change exceeds it.
 
 ## Sources & credits

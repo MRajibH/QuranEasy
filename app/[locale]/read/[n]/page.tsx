@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
 import { SurahReader } from "@/components/SurahReader";
 import { getDict, LOCALES, num } from "@/lib/i18n";
 import { getSurah, getSurahs } from "@/lib/server-data";
@@ -51,6 +51,9 @@ export default async function SurahPage({ params }: { params: Params }) {
         <p className="text-muted">
           {locale === "bn" ? s.bn : s.en} · {t.read.verses(num(locale, s.verses))} · {s.place === "makkah" ? t.read.makki : t.read.madani}
         </p>
+        <Link href={`/${locale}/decks/s${n}/`} className="btn btn-secondary mt-4">
+          <GraduationCap className="w-5 h-5" aria-hidden /> {t.decks.learnSurah}
+        </Link>
         {n !== 1 && n !== 9 && (
           <div className="mt-4">
             <p className="font-arabic ar-md" lang="ar" dir="rtl">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</p>

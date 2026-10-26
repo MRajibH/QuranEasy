@@ -36,9 +36,11 @@ export function ExampleAyah({ ex, caption = true }: { ex: Example; caption?: boo
           </span>
         ))}
       </p>
-      <p className="mt-2 text-base" lang={lang}>
-        {lang === "bn" ? ex.bn : ex.en}
-      </p>
+      {(lang === "bn" ? ex.bn : ex.en) && (
+        <p className="mt-2 text-base" lang={lang}>
+          {lang === "bn" ? ex.bn : ex.en}
+        </p>
+      )}
       <Link href={`/${locale}/read/${s}/#v${a}`} className="mt-1 inline-block text-sm text-primary underline underline-offset-4">
         {t.common.surah} {num(locale, s)}:{num(locale, a)}
       </Link>

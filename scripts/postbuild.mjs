@@ -21,7 +21,7 @@ const files = await walk(OUT);
 const rel = (p) => "/" + path.relative(OUT, p).split(path.sep).join("/");
 
 // App shell for both languages + every hashed asset (JS, CSS, fonts).
-const shellPages = ["", "daily/", "learn/", "lesson/", "review/", "practice/", "progress/", "settings/", "search/", "read/", "about/"];
+const shellPages = ["", "daily/", "learn/", "decks/", "grammar/", "lesson/", "review/", "practice/", "progress/", "settings/", "search/", "read/", "about/"];
 const precache = [
   "/",
   ...["bn", "en"].flatMap((l) => shellPages.map((p) => `/${l}/${p}`)),
