@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
 import { WordActions } from "@/components/WordActions";
 import { WordStudy } from "@/components/WordStudy";
+import { AyahWords } from "@/components/AyahWords";
 import { getDict, LOCALES, num } from "@/lib/i18n";
 import { getLemma, getLemmas, getWordDetail, wordPageIds } from "@/lib/server-data";
 import { grammarChips } from "@/lib/grammar";
@@ -91,7 +92,7 @@ export default async function WordPage({ params }: { params: Params }) {
             <span key={c} className="rounded-full bg-surface-2 text-muted px-3 py-1 font-semibold">{c}</span>
           ))}
         </div>
-        <WordActions lemmaId={id} audioLoc={l.refs[0]} />
+        <WordActions lemmaId={id} audioLoc={detail.audio} />
         <Link href={`/${locale}/lesson/?n=${lesson}`} className="btn btn-primary btn-lg mt-4">
           <GraduationCap className="w-5 h-5" aria-hidden /> {t.word.inLesson(num(locale, lesson))}
         </Link>
@@ -106,13 +107,7 @@ export default async function WordPage({ params }: { params: Params }) {
             const [s, a] = ex.ref.split(":");
             return (
               <figure key={ex.ref} className="card p-5">
-                <p className="font-arabic ar-md text-right" lang="ar" dir="rtl">
-                  {ex.w.map((w, i) => (
-                    <span key={i}>
-                      <span className={i === ex.hi ? "hl-word" : ""}>{w}</span>{" "}
-                    </span>
-                  ))}
-                </p>
+                <AyahWords verseRef={ex.ref} words={ex.w} hi={ex.hi} start={ex.start} className="ar-md text-right" />
                 <p className="mt-2" lang={locale}>{locale === "bn" ? ex.bn : ex.en}</p>
                 <figcaption className="mt-2 text-sm">
                   <Link href={`/${locale}/read/${s}/#v${a}`} className="text-primary font-semibold underline underline-offset-4">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeftRight, BookOpenText, Equal, GitBranch, Shapes } from "lucide-react";
+import { AudioButton } from "./ui";
 import { getDict, num } from "@/lib/i18n";
 import { grammarChips, grammarLabels } from "@/lib/grammar";
 import { WORD_PAGE_MIN_FREQ } from "@/lib/constants";
@@ -23,7 +24,7 @@ function Heading({ icon: Icon, children }: { icon: typeof Shapes; children: Reac
 function RelationList({ items, locale }: { items: Relation[]; locale: Locale }) {
   return (
     <ul className="grid gap-2 sm:grid-cols-2">
-      {items.map(([id, ar, bn, en, freq]) => {
+      {items.map(([id, ar, bn, en, freq, audio]) => {
         const body = (
           <>
             <span className="font-arabic ar-sm min-w-16 text-center" lang="ar" dir="rtl">{ar}</span>
@@ -33,9 +34,10 @@ function RelationList({ items, locale }: { items: Relation[]; locale: Locale }) 
             </span>
           </>
         );
-        const cls = "flex items-center gap-3 rounded-2xl bg-surface-2/70 px-3 py-2";
+        const cls = "flex-1 min-w-0 flex items-center gap-3 rounded-xl px-1 py-1";
         return (
-          <li key={id}>
+          <li key={id} className="flex items-center gap-2 rounded-2xl bg-surface-2/70 px-2 py-1.5">
+            <AudioButton location={audio} />
             {freq >= WORD_PAGE_MIN_FREQ ? (
               <Link href={`/${locale}/w/${id}/`} className={`${cls} hover:bg-primary-soft`}>{body}</Link>
             ) : (
@@ -94,7 +96,8 @@ export function WordStudy({ word, locale }: { word: WordDetail; locale: Locale }
           <Heading icon={BookOpenText}>{t.word.forms}</Heading>
           <ul className="divide-y divide-border">
             {word.forms.map((f) => (
-              <li key={f.ar} className="py-3 flex items-center gap-4">
+              <li key={f.ar} className="py-3 flex items-center gap-3">
+                <AudioButton location={f.loc} />
                 <span className="font-arabic ar-sm min-w-24 text-right" lang="ar" dir="rtl">{f.ar}</span>
                 <span className="flex-1">
                   <span className="block font-semibold">{locale === "bn" ? f.bn : f.en}</span>

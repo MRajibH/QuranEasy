@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLocale } from "./LocaleProvider";
 import { AudioButton, Meaning } from "./ui";
+import { AyahWords } from "./AyahWords";
 import { useSettings } from "@/lib/settings";
 import { num } from "@/lib/i18n";
 import { WORD_PAGE_MIN_FREQ } from "@/lib/constants";
@@ -16,6 +17,7 @@ export interface CardWord {
   en: string;
   root: string;
   freq: number;
+  audio?: string;
 }
 
 /** Location "s:a:w" of the highlighted word in an example (used for audio). */
@@ -29,13 +31,7 @@ export function ExampleAyah({ ex, caption = true }: { ex: Example; caption?: boo
   return (
     <figure className="rounded-2xl bg-surface-2/70 p-4 text-center">
       {caption && <figcaption className="text-sm font-semibold text-muted mb-1">{t.learn.example}</figcaption>}
-      <p className="font-arabic ar-md" lang="ar" dir="rtl">
-        {ex.w.map((w, i) => (
-          <span key={i}>
-            <span className={i === ex.hi ? "hl-word" : ""}>{w}</span>{" "}
-          </span>
-        ))}
-      </p>
+      <AyahWords verseRef={ex.ref} words={ex.w} hi={ex.hi} start={ex.start} className="ar-md" />
       {(lang === "bn" ? ex.bn : ex.en) && (
         <p className="mt-2 text-base" lang={lang}>
           {lang === "bn" ? ex.bn : ex.en}
@@ -51,7 +47,8 @@ export function ExampleAyah({ ex, caption = true }: { ex: Example; caption?: boo
 export function WordCard({ word, ex, audioLoc }: { word: CardWord; ex?: Example; audioLoc?: string }) {
   const { locale, t } = useLocale();
   const { translit } = useSettings();
-  const loc = audioLoc ?? (ex ? exampleLocation(ex) : undefined);
+  // Prefer the word recited on its own (exact pronunciation) over its occurrence in the example ayah.
+  const loc = audioLoc ?? word.audio ?? (ex ? exampleLocation(ex) : undefined);
   return (
     <div className="card p-6 md:p-8 text-center animate-pop bg-[radial-gradient(120%_70%_at_50%_0%,var(--primary-soft),var(--surface)_70%)]">
       <p className="font-arabic ar-xl text-text" lang="ar" dir="rtl">

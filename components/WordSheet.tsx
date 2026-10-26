@@ -71,6 +71,7 @@ function SheetBody({ word, onClose }: { word: SheetWord; onClose: () => void }) 
           <>
             <p className="font-arabic ar-lg" lang="ar" dir="rtl">{ar}</p>
             {translit && tr && <p className="text-muted italic mt-1">{tr}</p>}
+            {form && firstLoc && <AudioButton location={firstLoc} className="mt-1" />}
             <Meaning bn={bn} en={en} size="md" className="mt-1" />
           </>
         ) : null}

@@ -8,6 +8,11 @@ export function wordAudioUrl(location: string) {
 
 let current: HTMLAudioElement | null = null;
 
+export function stopAudio() {
+  current?.pause();
+  current = null;
+}
+
 export function playWord(location: string): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   current?.pause();
@@ -15,6 +20,7 @@ export function playWord(location: string): Promise<void> {
   current = audio;
   return new Promise((resolve) => {
     audio.onended = () => resolve();
+    audio.onpause = () => resolve(); // stopped or replaced by another word
     audio.onerror = () => resolve();
     audio.play().catch(() => resolve());
   });

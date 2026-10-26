@@ -8,7 +8,7 @@ import { WORD_PAGE_MIN_FREQ } from "./constants";
 
 export interface LemmaFull extends Lemma {
   refs: string[];
-  forms: { ar: string; n: number; en: string; bn: string; tr: string }[];
+  forms: { ar: string; n: number; en: string; bn: string; tr: string; loc: string }[];
 }
 
 const root = process.cwd();

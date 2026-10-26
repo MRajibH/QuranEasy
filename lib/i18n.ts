@@ -119,6 +119,9 @@ const bn = {
     prevSurah: "আগের সূরা", nextSurah: "পরের সূরা",
     bismillah: "পরম করুণাময় অতি দয়ালু আল্লাহর নামে",
     translationBy: "অনুবাদ: তাইসীরুল কুরআন",
+    tapAudio: "চাপ দিলে শুনুন",
+    playWords: "শব্দে শব্দে শুনুন",
+    stop: "থামান",
   },
   word: {
     rank: (n: string) => `ব্যবহারের দিক থেকে #${n}`,
@@ -368,6 +371,9 @@ const en: Dict = {
     prevSurah: "Previous surah", nextSurah: "Next surah",
     bismillah: "In the name of Allah, the Most Gracious, the Most Merciful",
     translationBy: "Translation: Saheeh International",
+    tapAudio: "Hear on tap",
+    playWords: "Listen word by word",
+    stop: "Stop",
   },
   word: {
     rank: (n: string) => `#${n} most frequent`,

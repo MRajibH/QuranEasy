@@ -177,7 +177,9 @@ async function main() {
             bump(st.bn, tBn);
             bump(st.tr, w.transliteration?.text);
           }
-          const form = st.forms.get(w.text_uthmani) ?? { n: 0, en: tEn, bn: tBn, tr: w.transliteration?.text ?? "" };
+          const form = st.forms.get(w.text_uthmani) ?? {
+            n: 0, en: tEn, bn: tBn, tr: w.transliteration?.text ?? "", loc: w.location, single: m.single,
+          };
           form.n++;
           st.forms.set(w.text_uthmani, form);
           st.occ.push(w.location);
@@ -217,6 +219,12 @@ async function main() {
   // ---- lemmas ordered by frequency, ids 1..N ----
   const ordered = [...lemmaKeys.values()].sort((a, b) => b.freq - a.freq || a.key.localeCompare(b.key));
   const idOf = new Map(ordered.map((st, i) => [st.key, i + 1]));
+  // Exact pronunciation: recitation of the lemma's most common form standing alone (no attached
+  // prefix/suffix), so the audio says just this word — e.g. مِن "min", not لَمِنَ "lamina".
+  const audioOf = (st) => {
+    const forms = [...st.forms.values()].sort((a, b) => b.n - a.n);
+    return (forms.find((f) => f.single) ?? forms[0]).loc;
+  };
   const lemmas = ordered.map((st, i) => ({
     id: i + 1,
     ar: st.key,
@@ -226,12 +234,14 @@ async function main() {
     bn: mostCommon(st.bn) || mostCommon(st.bnAll),
     en: mostCommon(st.en) || mostCommon(st.enAll),
     tr: mostCommon(st.tr),
+    audio: audioOf(st),
     g: finalizeGrammar(st.gram, st.freq),
     refs: pickExamples(st.occ),
     forms: [...st.forms.entries()]
       .sort((a, b) => b[1].n - a[1].n)
       .slice(0, MAX_FORMS)
-      .map(([ar, f]) => ({ ar, ...f })),
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- drop the internal flag
+      .map(([ar, { single, ...f }]) => ({ ar, ...f })),
   }));
 
   // Gender: masculine tags are kept; feminine is shown only with a feminine marker (ة / ى / اء)
@@ -263,10 +273,10 @@ async function main() {
   await fs.mkdir(BUILD_OUT, { recursive: true });
   await fs.writeFile(path.join(BUILD_OUT, "lemmas.json"), JSON.stringify(lemmas));
 
-  // lite tuple: [id, arabic, bangla, english, transliteration, freq, root, firstLocation]
+  // lite tuple: [id, arabic, bangla, english, transliteration, freq, root, audioLocation]
   await fs.writeFile(
     path.join(OUT, "lemmas-lite.json"),
-    JSON.stringify(lemmas.map((l) => [l.id, l.ar, l.bn, l.en, l.tr, l.freq, l.root, l.refs[0]])),
+    JSON.stringify(lemmas.map((l) => [l.id, l.ar, l.bn, l.en, l.tr, l.freq, l.root, l.audio])),
   );
 
   let covered = 0;
@@ -341,7 +351,7 @@ async function main() {
   // relation tuple: [id, arabic, bangla, english, freq]
   const rel = (id) => {
     const l = lemmas[id - 1];
-    return [l.id, l.ar, l.bn, l.en, l.freq];
+    return [l.id, l.ar, l.bn, l.en, l.freq, l.audio];
   };
 
   await fs.mkdir(path.join(OUT, "word"), { recursive: true });
@@ -350,7 +360,7 @@ async function main() {
     if (l.freq < WORD_PAGE_MIN_FREQ) continue;
     const family = (byRoot.get(l.root) ?? []).filter((x) => x.id !== l.id).slice(0, MAX_FAMILY).map((x) => rel(x.id));
     const detail = {
-      id: l.id, ar: l.ar, tr: l.tr, bn: l.bn, en: l.en, root: l.root, freq: l.freq, g: l.g,
+      id: l.id, ar: l.ar, tr: l.tr, bn: l.bn, en: l.en, root: l.root, freq: l.freq, audio: l.audio, g: l.g,
       forms: l.forms,
       family,
       ant: [...(ant.get(l.id) ?? [])].map(rel),
@@ -373,7 +383,7 @@ async function main() {
     const from = Math.max(0, ex.hi - DECK_EX_SIDE);
     const to = Math.min(ex.w.length, ex.hi + DECK_EX_SIDE + 1);
     const w = [...(from > 0 ? ["…"] : []), ...ex.w.slice(from, to), ...(to < ex.w.length ? ["…"] : [])];
-    return { ref: ex.ref, w, hi: ex.hi - from + (from > 0 ? 1 : 0), en: "", bn: "" };
+    return { ref: ex.ref, w, hi: ex.hi - from + (from > 0 ? 1 : 0), start: from + 1, en: "", bn: "" };
   };
   const buildDeck = (id, chapterNums) => {
     const stats = new Map(); // lemmaId -> { n, first, loc }
@@ -395,7 +405,7 @@ async function main() {
       .sort((a, b) => b[1].n - a[1].n || a[1].first - b[1].first)
       .map(([lid, st]) => {
         const l = lemmas[lid - 1];
-        return { id: l.id, ar: l.ar, root: l.root, pos: l.pos, freq: l.freq, bn: l.bn, en: l.en, tr: l.tr, sfreq: st.n, ex: deckExample(st.loc) };
+        return { id: l.id, ar: l.ar, root: l.root, pos: l.pos, freq: l.freq, bn: l.bn, en: l.en, tr: l.tr, sfreq: st.n, audio: l.audio, ex: deckExample(st.loc) };
       });
     return { id, total, words };
   };

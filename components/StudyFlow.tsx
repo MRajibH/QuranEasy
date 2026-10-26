@@ -79,7 +79,7 @@ export function StudyFlow({
   const [firstTry, setFirstTry] = useState<Map<number, boolean>>(new Map());
 
   const current = words[i];
-  useAutoplay(phase === "learn" ? exampleLocation(current.ex) : undefined);
+  useAutoplay(phase === "learn" ? (current.audio ?? exampleLocation(current.ex)) : undefined);
 
   const startQuiz = () => {
     setQueue(shuffle(words));

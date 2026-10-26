@@ -1,6 +1,6 @@
 export type Locale = "bn" | "en";
 
-/** Compact lemma tuple from /data/lemmas-lite.json */
+/** Compact lemma tuple from /data/lemmas-lite.json (last item: exact-pronunciation audio location) */
 export type LemmaLite = [
   id: number,
   ar: string,
@@ -21,12 +21,16 @@ export interface Lemma {
   bn: string;
   en: string;
   tr: string;
+  /** location "s:a:w" of the word recited on its own — exact pronunciation */
+  audio: string;
 }
 
 export interface Example {
   ref: string;
   w: string[];
   hi: number;
+  /** word number of w[0] in the ayah when the example is a trimmed window */
+  start?: number;
   en: string;
   bn: string;
 }
@@ -69,7 +73,7 @@ export interface Verse {
 }
 
 /** relation tuple: [id, arabic, bangla, english, freq] */
-export type Relation = [id: number, ar: string, bn: string, en: string, freq: number];
+export type Relation = [id: number, ar: string, bn: string, en: string, freq: number, audio: string];
 
 /** Deep study data for one lemma, from /data/word/ID.json */
 export interface WordDetail {
@@ -80,8 +84,9 @@ export interface WordDetail {
   en: string;
   root: string;
   freq: number;
+  audio: string;
   g: import("./grammar").Grammar;
-  forms: { ar: string; n: number; en: string; bn: string; tr: string }[];
+  forms: { ar: string; n: number; en: string; bn: string; tr: string; loc: string }[];
   family: Relation[];
   ant: Relation[];
   syn: Relation[];

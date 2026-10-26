@@ -46,7 +46,7 @@ function DailyWord({ word, index, started }: { word: WordDetail; index: number; 
         </span>
         <h2 id={`dw-${word.id}`} className="font-arabic ar-xl mt-4" lang="ar" dir="rtl">{word.ar}</h2>
         {translit && word.tr && <p className="text-muted text-lg italic mt-1">{word.tr}</p>}
-        {ex && <AudioButton location={exampleLocation(ex)} size="lg" label className="mt-3" />}
+        <AudioButton location={word.audio ?? exampleLocation(ex)} size="lg" label className="mt-3" />
         <Meaning bn={word.bn} en={word.en} size="xl" className="mt-5" />
         <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
           {grammarChips(word.g, locale).map((c) => (

@@ -72,5 +72,8 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [x] **সহজ আরবি ব্যাকরণ:** 12 Bangla-first mini-lessons (word types, roots, ال, gender, number, attached and
       separate pronouns, tenses, past endings, present prefixes, participles, particles) with quizzes
 - [x] Every grammar example verified to occur in the Qur'an (unit test) and shown in Uthmani script with audio
+- [x] **Exact pronunciation everywhere:** every base word plays its own recitation standing alone; every word in
+      the reader and in example ayat is tappable; “listen word by word” per ayah with highlighting; play
+      buttons on forms, root family, synonyms/antonyms and search results
 - [ ] Optional cloud sync (Cloudflare D1) only if users ask
 - [ ] More languages (Urdu, Indonesian)

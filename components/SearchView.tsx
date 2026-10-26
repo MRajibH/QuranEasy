@@ -5,7 +5,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { WordSheet, type SheetWord } from "./WordSheet";
-import { PageTitle, Spinner } from "./ui";
+import { AudioButton, PageTitle, Spinner } from "./ui";
 import { loadLemmas } from "@/lib/data";
 import { buildIndex, search, type SearchIndexItem } from "@/lib/search";
 import { useCardStatus } from "@/lib/progress";
@@ -63,11 +63,12 @@ export function SearchView() {
             {results.map((l) => {
               const st = status?.get(l[0]);
               return (
-                <li key={l[0]}>
+                <li key={l[0]} className="card p-3 flex items-center gap-3">
+                  <AudioButton location={l[7]} />
                   <button
                     type="button"
                     onClick={() => setSheet({ lemma: l })}
-                    className="card w-full p-4 flex items-center gap-4 text-left hover:border-primary"
+                    className="flex-1 min-w-0 flex items-center gap-4 text-left rounded-xl p-1 hover:bg-surface-2"
                   >
                     <span className="font-arabic ar-md min-w-20 text-center" lang="ar" dir="rtl">{l[1]}</span>
                     <span className="flex-1 min-w-0">
