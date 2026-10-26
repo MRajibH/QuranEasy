@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, GraduationCap, Home, Repeat, Search, Settings, Sparkles } from "lucide-react";
+import { BarChart3, BookOpen, GraduationCap, Home, Repeat, Search, Settings } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { useDueCount } from "@/lib/progress";
 import { num } from "@/lib/i18n";
 
@@ -42,57 +43,48 @@ export function Header() {
   const items = useItems();
   const other = locale === "bn" ? "en" : "bn";
   const switchHref = path.replace(/^\/(bn|en)/, `/${other}`);
+  const icon = "w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text";
   return (
-    <header className="sticky top-0 z-30 bg-bg/90 backdrop-blur border-b border-border">
-      <div className="mx-auto max-w-5xl px-4 h-16 flex items-center gap-2 sm:gap-3">
-        <Link href={`/${locale}/`} className="flex items-center gap-2 font-bold text-lg text-primary shrink-0">
-          <Logo className="w-9 h-9" />
-          <span className="hidden sm:inline">QuranEasy</span>
+    <header className="sticky top-0 z-30 bg-bg/85 backdrop-blur-md border-b border-border">
+      <div className="mx-auto max-w-6xl px-4 h-[4.25rem] flex items-center gap-2 sm:gap-3">
+        <Link href={`/${locale}/`} className="flex items-center gap-2.5 shrink-0">
+          <Logo className="w-10 h-10" />
+          <span className="hidden sm:flex flex-col leading-tight">
+            <span className="font-bold text-lg text-text">QuranEasy</span>
+            <span className="text-xs text-accent">{t.brandTagline}</span>
+          </span>
         </Link>
-        <nav className="hidden md:flex items-center gap-1 ml-4" aria-label="Main">
-          {items.map(({ href, label, Icon, exact, badge }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`relative flex items-center gap-2 px-3 h-11 rounded-xl font-semibold ${
-                isActive(path, href, exact) ? "bg-primary-soft text-primary" : "text-muted hover:text-text hover:bg-surface-2"
-              }`}
-            >
-              <Icon className="w-5 h-5" aria-hidden />
-              {label}
-              {badge && <DueBadge />}
-            </Link>
-          ))}
+        <nav className="hidden lg:flex items-center gap-1 ml-6" aria-label="Main">
+          {items.map(({ href, label, Icon, exact, badge }) => {
+            const active = isActive(path, href, exact);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? "page" : undefined}
+                className={`relative flex items-center gap-2 px-4 h-10 rounded-full font-semibold border transition-colors ${
+                  active ? "bg-primary-soft text-primary border-primary/30" : "border-transparent text-muted hover:text-text hover:bg-surface-2"
+                }`}
+              >
+                <Icon className="w-[18px] h-[18px]" aria-hidden />
+                {label}
+                {badge && <DueBadge />}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="ml-auto flex items-center gap-1">
-          <Link
-            href={`/${locale}/daily/`}
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-accent hover:bg-accent-soft"
-            aria-label={t.nav.daily}
-            title={t.nav.daily}
-          >
-            <Sparkles className="w-5 h-5" />
-          </Link>
-          <Link
-            href={`/${locale}/search/`}
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text"
-            aria-label={t.nav.search}
-            title={t.nav.search}
-          >
+        <div className="ml-auto flex items-center gap-1.5">
+          <Link href={`/${locale}/search/`} className={icon} aria-label={t.nav.search} title={t.nav.search}>
             <Search className="w-5 h-5" />
           </Link>
-          <Link
-            href={`/${locale}/settings/`}
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text"
-            aria-label={t.nav.settings}
-            title={t.nav.settings}
-          >
+          <ThemeToggle />
+          <Link href={`/${locale}/settings/`} className={`${icon} hidden sm:flex`} aria-label={t.nav.settings} title={t.nav.settings}>
             <Settings className="w-5 h-5" />
           </Link>
           <Link
             href={switchHref}
             hrefLang={other}
-            className="h-11 px-3 rounded-xl flex items-center font-semibold border-2 border-border hover:border-primary"
+            className="h-10 px-3.5 rounded-full flex items-center gap-1 font-semibold border border-border hover:border-primary"
             aria-label={other === "en" ? "Switch to English" : "বাংলায় দেখুন"}
           >
             {other === "en" ? "EN" : "বাং"}

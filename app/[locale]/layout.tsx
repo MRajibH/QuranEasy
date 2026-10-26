@@ -6,6 +6,8 @@ import { fontVars } from "../fonts";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { BottomNav, Header } from "@/components/Nav";
 import { ClientInit } from "@/components/ClientInit";
+import { Logo } from "@/components/Logo";
+import { Heart } from "lucide-react";
 import { getDict, isLocale, LOCALES } from "@/lib/i18n";
 import { themeScript } from "@/lib/theme";
 import { REPO_URL, SITE_NAME, SITE_URL } from "@/lib/constants";
@@ -66,21 +68,38 @@ export default async function LocaleLayout({
           </a>
           <ClientInit />
           <Header />
-          <main id="main" className="flex-1 w-full mx-auto max-w-5xl px-4 pt-6 pb-32 md:pb-12">
+          <main id="main" className="flex-1 w-full mx-auto max-w-6xl px-4 pt-6 pb-32 md:pb-12">
             {children}
           </main>
           <footer className="border-t border-border pb-28 md:pb-0">
-            <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-muted flex flex-col md:flex-row gap-4 md:items-center">
-              <p className="flex-1">{t.footer.niyyah}</p>
-              <nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer">
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/daily/`}>{t.nav.daily}</Link>
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/practice/`}>{t.nav.practice}</Link>
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/search/`}>{t.nav.search}</Link>
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/about/`}>{t.nav.about}</Link>
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/about/#sources`}>{t.footer.sources}</Link>
-                <Link className="hover:text-primary underline-offset-4 hover:underline" href={`/${locale}/support/`}>{t.nav.support}</Link>
+            <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 md:grid-cols-[auto_1fr_auto] md:items-center text-sm text-muted">
+              <Link href={`/${locale}/`} className="flex items-center gap-2.5">
+                <Logo className="w-10 h-10" />
+                <span className="flex flex-col leading-tight">
+                  <span className="font-bold text-lg text-text">QuranEasy</span>
+                  <span className="text-xs text-accent">{t.brandTagline}</span>
+                </span>
+              </Link>
+              <nav className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center" aria-label="Footer">
+                {[
+                  [`/${locale}/daily/`, t.nav.daily],
+                  [`/${locale}/decks/`, t.decks.title],
+                  [`/${locale}/grammar/`, t.learnTabs.grammar],
+                  [`/${locale}/practice/`, t.nav.practice],
+                  [`/${locale}/about/`, t.nav.about],
+                  [`/${locale}/about/#sources`, t.footer.sources],
+                  [`/${locale}/support/`, t.nav.support],
+                ].map(([href, label]) => (
+                  <Link key={href} className="hover:text-primary underline-offset-4 hover:underline" href={href}>
+                    {label}
+                  </Link>
+                ))}
                 <a className="hover:text-primary underline-offset-4 hover:underline" href={REPO_URL} rel="noopener" target="_blank">GitHub</a>
               </nav>
+              <p className="flex items-center gap-1.5 md:justify-end">
+                <Heart className="w-4 h-4 text-accent" aria-hidden /> {t.footer.motto}
+              </p>
+              <p className="md:col-span-3 text-xs text-center border-t border-border pt-4">{t.footer.niyyah} · {t.footer.privacy}</p>
             </div>
           </footer>
           <BottomNav />

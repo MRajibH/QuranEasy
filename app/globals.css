@@ -111,6 +111,8 @@ body {
   border-radius: 8px;
 }
 
+/* Component classes live in the components layer so Tailwind utilities can override them. */
+@layer components {
 /* Buttons: min 48px tall tap targets */
 .btn {
   display: inline-flex;
@@ -133,6 +135,12 @@ body {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 1px 2px rgb(0 0 0 / 0.12), 0 6px 16px -6px color-mix(in srgb, var(--primary) 70%, transparent);
 }
 .btn-primary:hover { background: var(--primary-hover); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 8px 22px -6px color-mix(in srgb, var(--primary) 75%, transparent); }
+.btn-gold {
+  background: linear-gradient(180deg, #f5d585 0%, #dcaa48 100%);
+  color: #2a1d05;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.45), 0 8px 22px -8px rgb(220 170 72 / 0.7);
+}
+.btn-gold:hover { background: linear-gradient(180deg, #f8dc95 0%, #e2b357 100%); }
 .btn-secondary { background: var(--surface); color: var(--text); border: 2px solid var(--border); box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { border-color: var(--primary); }
 .btn-ghost { color: var(--primary); }
@@ -194,6 +202,8 @@ a.card:hover, button.card:hover { transform: translateY(-2px); box-shadow: var(-
 .animate-bump { animation: bump 0.35s ease both; }
 @keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
 .animate-rise { animation: rise 0.35s ease-out both; }
+
+}
 
 .hl-word {
   background: var(--accent-soft);

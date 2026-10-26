@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Flame, GraduationCap, Repeat } from "lucide-react";
+import { ArrowRight, BookOpen, Flame, GraduationCap, Repeat, Target } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useLocale } from "./LocaleProvider";
-import { ProgressBar, ProgressRing } from "./ui";
+import { ProgressBar } from "./ui";
 import { db } from "@/lib/db";
 import { nextLessonId, useCompletedLessons, useDueCount, useTodayNewCount } from "@/lib/progress";
 import { updateSettings, useSettings, type MeaningLang } from "@/lib/settings";
@@ -14,7 +14,7 @@ import { num } from "@/lib/i18n";
 import { loadLemmaMap } from "@/lib/data";
 import { TOTAL_LESSONS, TOTAL_WORDS } from "@/lib/constants";
 
-function useOverview() {
+export function useOverview() {
   return useLiveQuery(async () => {
     const d = db();
     const [cards, days] = await Promise.all([d.cards.toArray(), d.logs.orderBy("day").uniqueKeys()]);
@@ -40,8 +40,10 @@ function Onboarding() {
     ["both", t.settings.both],
   ];
   return (
-    <section className="card p-6 md:p-8 animate-pop" aria-labelledby="setup">
-      <h2 id="setup" className="text-2xl font-bold">{t.home.setupTitle}</h2>
+    <section className="card bg-surface/85 backdrop-blur p-6 md:p-7 animate-pop" aria-labelledby="setup">
+      <h2 id="setup" className="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <Target className="w-6 h-6 text-primary" aria-hidden /> {t.home.setupTitle}
+      </h2>
       <fieldset className="mt-6">
         <legend className="font-semibold text-lg mb-3">{num(locale, 1)}. {t.home.setupMeaning}</legend>
         <div className="grid grid-cols-3 gap-3">
@@ -78,10 +80,11 @@ function Onboarding() {
       <Link
         href={`/${locale}/lesson/?n=1`}
         onClick={() => updateSettings({ onboarded: true })}
-        className="btn btn-primary btn-lg w-full mt-8"
+        className="btn btn-gold btn-lg w-full mt-7"
       >
-        {t.home.startFirst} <ArrowRight className="w-5 h-5" aria-hidden />
+        <BookOpen className="w-5 h-5" aria-hidden /> {t.home.startFirst} <ArrowRight className="w-5 h-5" aria-hidden />
       </Link>
+      <p className="text-center text-sm text-muted mt-2">{t.home.startNote}</p>
       <Link
         href={`/${locale}/decks/s1/?p=1`}
         onClick={() => updateSettings({ onboarded: true })}
@@ -110,8 +113,8 @@ export function TodayPanel() {
   const goalMet = (newToday ?? 0) >= settings.dailyNew;
 
   return (
-    <section className="grid gap-4 md:grid-cols-[1fr_auto]" aria-label={t.home.todayTitle}>
-      <div className="card p-6 md:p-8">
+    <section aria-label={t.home.todayTitle}>
+      <div className="card bg-surface/85 backdrop-blur p-6 md:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-bold">{t.home.todayTitle}</h2>
           {overview.streak > 0 && (
@@ -156,15 +159,6 @@ export function TodayPanel() {
         </div>
       </div>
 
-      <Link
-        href={`/${locale}/progress/`}
-        className="card p-6 flex flex-col items-center justify-center text-center gap-2 hover:border-primary md:w-64"
-      >
-        <ProgressRing pct={overview.coverage} size={150} stroke={14}>
-          <span className="text-3xl font-bold text-primary">{num(locale, overview.coverage)}%</span>
-        </ProgressRing>
-        <span className="font-semibold">{t.home.wordsKnown(num(locale, overview.words), num(locale, TOTAL_WORDS))}</span>
-      </Link>
     </section>
   );
 }
