@@ -94,7 +94,7 @@ export function DailyWords() {
   return (
     <div className="max-w-3xl mx-auto">
       <PageTitle title={t.daily.title} subtitle={t.daily.subtitle}>
-        <Sparkles className="w-10 h-10 text-accent" aria-hidden />
+        <Sparkles className="hidden sm:block w-10 h-10 text-accent" aria-hidden />
       </PageTitle>
       {words.length === 0 && <p className="card p-8 text-center text-lg">{t.daily.noMore}</p>}
       <div className="grid gap-10">

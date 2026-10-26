@@ -40,13 +40,13 @@ function Onboarding() {
     ["both", t.settings.both],
   ];
   return (
-    <section className="card bg-surface/85 backdrop-blur p-6 md:p-7 animate-pop" aria-labelledby="setup">
+    <section className="card bg-surface/85 backdrop-blur p-4 sm:p-6 md:p-7 animate-pop" aria-labelledby="setup">
       <h2 id="setup" className="text-xl md:text-2xl font-bold flex items-center gap-2">
         <Target className="w-6 h-6 text-primary" aria-hidden /> {t.home.setupTitle}
       </h2>
       <fieldset className="mt-6">
         <legend className="font-semibold text-lg mb-3">{num(locale, 1)}. {t.home.setupMeaning}</legend>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {opts.map(([v, label]) => (
             <button
               key={v}
@@ -62,7 +62,7 @@ function Onboarding() {
       </fieldset>
       <fieldset className="mt-6">
         <legend className="font-semibold text-lg mb-3">{num(locale, 2)}. {t.home.setupGoal}</legend>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {[5, 10, 20].map((n) => (
             <button
               key={n}
@@ -114,7 +114,7 @@ export function TodayPanel() {
 
   return (
     <section aria-label={t.home.todayTitle}>
-      <div className="card bg-surface/85 backdrop-blur p-6 md:p-7">
+      <div className="card bg-surface/85 backdrop-blur p-4 sm:p-6 md:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-bold">{t.home.todayTitle}</h2>
           {overview.streak > 0 && (
@@ -127,9 +127,9 @@ export function TodayPanel() {
 
         <div className="mt-5 grid gap-3">
           {due > 0 ? (
-            <Link href={`/${locale}/review/`} className="btn btn-primary btn-lg w-full justify-between">
-              <span className="flex items-center gap-3 text-left">
-                <Repeat className="w-6 h-6" aria-hidden />
+            <Link href={`/${locale}/review/`} className="btn btn-primary btn-lg w-full justify-between max-sm:text-base max-sm:px-4">
+              <span className="flex items-center gap-2.5 text-left">
+                <Repeat className="w-6 h-6 shrink-0" aria-hidden />
                 {t.home.startReview}
               </span>
               <span className="rounded-full bg-primary-fg/20 px-3 py-0.5">{num(locale, due)}</span>
@@ -139,10 +139,10 @@ export function TodayPanel() {
           )}
           <Link
             href={`/${locale}/lesson/?n=${next}`}
-            className={`btn btn-lg w-full justify-between ${due > 0 || goalMet ? "btn-secondary" : "btn-primary"}`}
+            className={`btn btn-lg w-full justify-between max-sm:text-base max-sm:px-4 ${due > 0 || goalMet ? "btn-secondary" : "btn-primary"}`}
           >
-            <span className="flex items-center gap-3 text-left">
-              <GraduationCap className="w-6 h-6" aria-hidden />
+            <span className="flex items-center gap-2.5 text-left">
+              <GraduationCap className="w-6 h-6 shrink-0" aria-hidden />
               {t.home.nextLesson(num(locale, next))}
             </span>
             <ArrowRight className="w-5 h-5" aria-hidden />
@@ -151,7 +151,7 @@ export function TodayPanel() {
         {due > 0 && <p className="mt-3 text-muted">{t.home.dueReviews(num(locale, due))}</p>}
 
         <div className="mt-6">
-          <div className="flex justify-between text-sm font-semibold mb-1.5">
+          <div className="flex flex-wrap justify-between gap-x-3 text-sm font-semibold mb-1.5">
             <span>{t.home.todayGoal}</span>
             <span className="text-muted">{t.home.newToday(num(locale, newToday ?? 0), num(locale, settings.dailyNew))}</span>
           </div>

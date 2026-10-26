@@ -119,7 +119,7 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
 
   return (
     <>
-      <div className="sticky top-16 z-20 -mx-4 px-4 py-2 bg-bg/95 backdrop-blur mb-4 flex flex-wrap items-center gap-2">
+      <div className="sticky top-[4.25rem] z-20 -mx-4 px-4 py-2 bg-bg/95 backdrop-blur mb-4 flex items-center gap-2 overflow-x-auto [scrollbar-width:none]">
         {toggles.map(([k, label]) => (
           <button
             key={k}
@@ -127,14 +127,14 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
             role="switch"
             aria-checked={view[k]}
             onClick={() => toggle(k)}
-            className={`h-11 px-4 rounded-full border-2 font-semibold text-sm ${
+            className={`h-11 px-4 shrink-0 whitespace-nowrap rounded-full border-2 font-semibold text-sm ${
               view[k] ? "border-primary bg-primary-soft text-primary" : "border-border text-muted"
             }`}
           >
             {label}
           </button>
         ))}
-        <span className="ml-auto flex items-center gap-3 text-sm text-muted">
+        <span className="ml-auto hidden md:flex shrink-0 items-center gap-3 text-sm text-muted">
           <span className="flex items-center gap-1"><span className="w-4 h-1 rounded bg-success inline-block" />{t.read.legendKnown}</span>
           <span className="flex items-center gap-1"><span className="w-4 h-1 rounded bg-accent inline-block" />{t.read.legendLearning}</span>
         </span>

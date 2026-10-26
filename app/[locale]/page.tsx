@@ -26,7 +26,7 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   return (
     <div className="grid gap-8 md:gap-10">
       {/* Hero: always dark (the "dark" class re-themes everything inside), start card + illustration */}
-      <section className="dark hero p-5 sm:p-7 lg:p-10 grid gap-8 lg:grid-cols-[1.05fr_1fr] items-center">
+      <section className="dark hero -mx-4 -mt-6 sm:mx-0 sm:mt-0 rounded-none sm:rounded-[2rem] px-4 py-6 sm:p-7 lg:p-10 grid gap-6 sm:gap-8 lg:grid-cols-[1.05fr_1fr] items-center">
         <div className="grid gap-5">
           <span className="justify-self-start inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-soft/60 text-accent px-3.5 py-1.5 text-sm font-semibold">
             <Sparkles className="w-4 h-4" aria-hidden /> {t.home.heroBadge}

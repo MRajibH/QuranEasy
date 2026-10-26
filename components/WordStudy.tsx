@@ -98,12 +98,15 @@ export function WordStudy({ word, locale }: { word: WordDetail; locale: Locale }
             {word.forms.map((f) => (
               <li key={f.ar} className="py-3 flex items-center gap-3">
                 <AudioButton location={f.loc} />
-                <span className="font-arabic ar-sm min-w-24 text-right" lang="ar" dir="rtl">{f.ar}</span>
-                <span className="flex-1">
+                <span className="font-arabic ar-sm min-w-14 sm:min-w-24 text-right" lang="ar" dir="rtl">{f.ar}</span>
+                <span className="flex-1 min-w-0">
                   <span className="block font-semibold">{locale === "bn" ? f.bn : f.en}</span>
-                  <span className="block text-sm text-muted">{f.tr}</span>
+                  <span className="block text-sm text-muted">
+                    {f.tr}
+                    <span className="sm:hidden"> · {num(locale, f.n)} {t.common.times}</span>
+                  </span>
                 </span>
-                <span className="text-sm text-muted whitespace-nowrap">{num(locale, f.n)} {t.common.times}</span>
+                <span className="hidden sm:inline text-sm text-muted whitespace-nowrap">{num(locale, f.n)} {t.common.times}</span>
               </li>
             ))}
           </ul>
