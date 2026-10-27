@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, GraduationCap, Home, Repeat, Search, Settings } from "lucide-react";
+import { BarChart3, BookOpen, Clock, GraduationCap, Home, Repeat, Search, Settings } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -43,7 +43,7 @@ export function Header() {
   const items = useItems();
   const other = locale === "bn" ? "en" : "bn";
   const switchHref = path.replace(/^\/(bn|en)/, `/${other}`);
-  const icon = "w-10 h-10 rounded-full flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text";
+  const icon = "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-muted hover:bg-surface-2 hover:text-text";
   return (
     <header className="sticky top-0 z-30 bg-bg/85 backdrop-blur-md border-b border-border">
       <div className="mx-auto max-w-6xl px-4 h-[4.25rem] flex items-center gap-2 sm:gap-3">
@@ -73,7 +73,10 @@ export function Header() {
             );
           })}
         </nav>
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
+          <Link href={`/${locale}/salah/`} className={`${icon} text-primary`} aria-label={t.nav.salah} title={t.nav.salah}>
+            <Clock className="w-5 h-5" />
+          </Link>
           <Link href={`/${locale}/search/`} className={icon} aria-label={t.nav.search} title={t.nav.search}>
             <Search className="w-5 h-5" />
           </Link>
@@ -84,7 +87,7 @@ export function Header() {
           <Link
             href={switchHref}
             hrefLang={other}
-            className="h-10 px-3.5 rounded-full flex items-center gap-1 font-semibold border border-border hover:border-primary"
+            className="h-9 sm:h-10 px-3 sm:px-3.5 rounded-full flex items-center gap-1 font-semibold border border-border hover:border-primary"
             aria-label={other === "en" ? "Switch to English" : "বাংলায় দেখুন"}
           >
             {other === "en" ? "EN" : "বাং"}

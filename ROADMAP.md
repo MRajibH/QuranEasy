@@ -84,5 +84,10 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [x] **IndoPak (Hafezi) script** option — reader, examples and occurrence lists; chosen at setup or in Settings
 - [x] **Every place a word appears** on word pages (all occurrences, 20 at a time, tappable words)
 - [x] **Full-ayah recitation:** 7 reciters, play whole surah, repeat each ayah 1/3/5/10× for memorising
+- [x] **নামাযের সময় (prayer times):** by the user's location (GPS, calculated on-device) or any of the 64 districts;
+      next-prayer countdown, Jumu'ah on Fridays, Sehri/Iftar, Tahajjud, forbidden times, Qibla compass,
+      monthly timetable, upcoming Islamic days, Ayyam al-Beed; Karachi/Hanafi defaults, Hijri moon-sighting adjustment
+- [x] Three dates every day: Hijri (Bangla + Arabic), Bangla বঙ্গাব্দ (2019 revision), Gregorian; Arabic weekday names
+- [x] Home strip with the next prayer and Hijri date
 - [ ] Optional cloud sync (Cloudflare D1) only if users ask
 - [ ] More languages (Urdu, Indonesian)

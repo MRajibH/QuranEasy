@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "learn/",
     "daily/",
+    "salah/",
     "decks/",
     "grammar/",
     ...GRAMMAR_LESSONS.map((l) => `grammar/${l.slug}/`),

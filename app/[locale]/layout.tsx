@@ -82,6 +82,7 @@ export default async function LocaleLayout({
               </Link>
               <nav className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center" aria-label="Footer">
                 {[
+                  [`/${locale}/salah/`, t.nav.salah],
                   [`/${locale}/daily/`, t.nav.daily],
                   [`/${locale}/decks/`, t.decks.title],
                   [`/${locale}/grammar/`, t.learnTabs.grammar],

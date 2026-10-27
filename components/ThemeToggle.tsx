@@ -12,7 +12,7 @@ export function ThemeToggle() {
   const [dark, setDark] = useState(false);
   useEffect(() => setDark(document.documentElement.classList.contains("dark")), [theme]);
   const btn = (active: boolean) =>
-    `w-9 h-9 rounded-full flex items-center justify-center transition-colors ${active ? "bg-accent-soft text-accent" : "text-muted hover:text-text"}`;
+    `w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-colors ${active ? "bg-accent-soft text-accent" : "text-muted hover:text-text"}`;
   return (
     <div className="flex items-center rounded-full border border-border p-0.5" role="group" aria-label={t.settings.theme}>
       <button type="button" className={btn(!dark)} onClick={() => updateSettings({ theme: "light" })} aria-pressed={!dark} aria-label={t.settings.light}>
