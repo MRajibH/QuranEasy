@@ -6,6 +6,7 @@ import { WordActions } from "@/components/WordActions";
 import { WordStudy } from "@/components/WordStudy";
 import { AyahWords } from "@/components/AyahWords";
 import { ReportMistake } from "@/components/ReportMistake";
+import { WordOccurrences } from "@/components/WordOccurrences";
 import { getDict, LOCALES, num } from "@/lib/i18n";
 import { getLemma, getLemmas, getWordDetail, wordPageIds } from "@/lib/server-data";
 import { grammarChips } from "@/lib/grammar";
@@ -103,6 +104,8 @@ export default async function WordPage({ params }: { params: Params }) {
       </header>
 
       <WordStudy word={detail} locale={locale} />
+
+      <WordOccurrences id={id} freq={l.freq} />
 
       <section aria-labelledby="examples">
         <h2 id="examples" className="text-xl font-bold mb-3">{t.word.examples}</h2>

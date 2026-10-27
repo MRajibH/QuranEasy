@@ -94,6 +94,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.font-indopak {
+  font-family: var(--font-indopak), "Noto Naskh Arabic", serif;
+  line-height: 2.2;
+}
+
 .font-arabic {
   font-family: var(--font-arabic);
   font-feature-settings: "calt", "liga";

@@ -63,7 +63,7 @@ export default async function SurahPage({ params }: { params: Params }) {
       </header>
 
       {/* First ayah is pre-rendered for search engines and no-JS readers; the reader replaces it. */}
-      <SurahReader n={n} fallback={{ ar: first.w.map((w) => w[0]).join(" "), tr: locale === "bn" ? first.bn : first.en }} />
+      <SurahReader n={n} surahName={`${t.common.surah} ${s.name}`} verseCount={s.verses} fallback={{ ar: first.w.map((w) => w[0]).join(" "), tr: locale === "bn" ? first.bn : first.en }} />
 
       <nav className="mt-8 grid grid-cols-2 gap-3">
         {prev ? (

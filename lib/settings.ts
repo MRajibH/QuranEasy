@@ -7,6 +7,8 @@ export { SETTINGS_KEY, LOCALE_KEY } from "./theme";
 
 export type MeaningLang = "bn" | "en" | "both";
 export type Theme = "system" | "light" | "dark";
+/** Script the Qur'an text is shown in: Uthmani (Madinah mus'haf) or IndoPak (common in Bangladesh). */
+export type Script = "uthmani" | "indopak";
 
 export interface Settings {
   meaning: MeaningLang;
@@ -15,6 +17,9 @@ export interface Settings {
   arScale: number;
   theme: Theme;
   translit: boolean;
+  script: Script;
+  reciter: string;
+  repeat: number;
   autoplay: boolean;
   onboarded: boolean;
 }
@@ -26,6 +31,9 @@ export const DEFAULT_SETTINGS: Settings = {
   arScale: 1,
   theme: "system",
   translit: true,
+  script: "uthmani",
+  reciter: "alafasy",
+  repeat: 1,
   autoplay: false,
   onboarded: false,
 };

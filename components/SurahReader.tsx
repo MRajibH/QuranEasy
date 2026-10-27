@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Play, Square } from "lucide-react";
+import { Headphones, Play, Square } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { WordSheet, type SheetWord } from "./WordSheet";
 import { LoadError, ProgressBar, Spinner } from "./ui";
 import { playWord, stopAudio } from "@/lib/audio";
+import { scriptClass, useIndopak } from "./useIndopak";
+import { useAyahPlayer } from "./useAyahPlayer";
+import { PlayerBar } from "./PlayerBar";
+import { updateSettings } from "@/lib/settings";
 import { loadLemmaMap, loadSurah } from "@/lib/data";
 import { useCardStatus } from "@/lib/progress";
 import { useSettings } from "@/lib/settings";
@@ -23,7 +27,17 @@ interface View {
 }
 const DEFAULT_VIEW: View = { meanings: true, translation: true, translit: false, tapAudio: true };
 
-export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string; tr: string } }) {
+export function SurahReader({
+  n,
+  surahName,
+  verseCount,
+  fallback,
+}: {
+  n: number;
+  surahName: string;
+  verseCount: number;
+  fallback: { ar: string; tr: string };
+}) {
   const { locale, t } = useLocale();
   const { meaning } = useSettings();
   const lang = meaning === "both" ? locale : meaning;
@@ -35,6 +49,16 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
   const [playing, setPlaying] = useState<{ v: number; i: number } | null>(null);
   const playToken = useRef(0);
   const status = useCardStatus();
+  const indopak = useIndopak(n);
+  const player = useAyahPlayer(n, verseCount);
+  const reciting = player.state?.playing ? player.state.ayah : null;
+
+  // Keep the ayah being recited in view while a whole surah plays.
+  useEffect(() => {
+    if (!reciting || !player.state?.continuous) return;
+    document.getElementById(`v${reciting}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [reciting, player.state?.continuous]);
+  const { script } = useSettings();
 
   const stop = useCallback(() => {
     playToken.current++;
@@ -45,6 +69,7 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
 
   /** Recites an ayah word by word, highlighting each word as it is heard. */
   const playVerse = async (v: Verse) => {
+    player.pause();
     const token = ++playToken.current;
     for (let i = 0; i < v.w.length; i++) {
       if (playToken.current !== token) return;
@@ -120,6 +145,21 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
   return (
     <>
       <div className="sticky top-[4.25rem] z-20 -mx-4 px-4 py-2 bg-bg/95 backdrop-blur mb-4 flex items-center gap-2 overflow-x-auto [scrollbar-width:none]">
+        <button
+          type="button"
+          onClick={() => player.play(player.state?.ayah ?? 1, true)}
+          className="h-11 px-4 shrink-0 whitespace-nowrap rounded-full bg-primary text-primary-fg font-semibold text-sm inline-flex items-center gap-2"
+        >
+          <Headphones className="w-4 h-4" aria-hidden /> {t.player.playSurah}
+        </button>
+        <button
+          type="button"
+          onClick={() => updateSettings({ script: script === "indopak" ? "uthmani" : "indopak" })}
+          className="h-11 px-4 shrink-0 whitespace-nowrap rounded-full border-2 border-accent/50 bg-accent-soft text-accent font-semibold text-sm"
+          aria-label={t.settings.script}
+        >
+          {script === "indopak" ? t.settings.indopak : t.settings.uthmani}
+        </button>
         {toggles.map(([k, label]) => (
           <button
             key={k}
@@ -159,7 +199,11 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
         {verses.map((v) => {
           const known = knownIn(v);
           return (
-          <section key={v.n} id={`v${v.n}`} className="verse card p-4 md:p-6 scroll-mt-32">
+          <section
+            key={v.n}
+            id={`v${v.n}`}
+            className={`verse card p-4 md:p-6 scroll-mt-32 transition-shadow ${reciting === v.n ? "ring-4 ring-accent/40" : ""}`}
+          >
             <div className="flex flex-wrap gap-x-3 gap-y-4 justify-start" dir="rtl" lang="ar">
               {v.w.map((w, i) => {
                 const st = status?.get(w[4]);
@@ -172,7 +216,10 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
                     onClick={() => {
                       const loc = `${n}:${v.n}:${i + 1}`;
                       stop();
-                      if (view.tapAudio) playWord(loc);
+                      if (view.tapAudio) {
+                        player.pause();
+                        playWord(loc);
+                      }
                       const lemma = lemmas.get(w[4]);
                       if (lemma) setSheet({ lemma, form: { ar: w[0], tr: w[1], en: w[2], bn: w[3], loc } });
                     }}
@@ -180,7 +227,7 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
                       isPlaying ? "bg-accent-soft ring-2 ring-accent" : ""
                     }`}
                   >
-                    <span className={`font-arabic ar-md border-b-[3px] ${underline}`}>{w[0]}</span>
+                    <span className={`${scriptClass(!!indopak)} ar-md border-b-[3px] ${underline}`}>{indopak?.[v.n - 1]?.[i] ?? w[0]}</span>
                     {view.translit && <span className="text-xs text-muted italic" dir="ltr">{w[1]}</span>}
                     {view.meanings && (
                       <span className="text-sm text-muted max-w-28 text-center leading-snug" dir="ltr" lang={lang}>
@@ -194,7 +241,18 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
                 ﴿{num("en", v.n).replace(/\d/g, (d) => "٠١٢٣٤٥٦٧٨٩"[Number(d)])}﴾
               </span>
             </div>
-            <div className="mt-4 pt-4 border-t border-border flex items-start gap-3">
+            <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-start gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={() => (reciting === v.n ? player.pause() : (stop(), player.play(v.n, false)))}
+                className={`shrink-0 h-11 px-3 rounded-full inline-flex items-center gap-2 text-sm font-semibold ${
+                  reciting === v.n ? "bg-accent text-white" : "bg-surface-2 text-text hover:brightness-95"
+                }`}
+                aria-label={reciting === v.n ? t.player.pause : t.player.recite}
+              >
+                {reciting === v.n ? <Square className="w-4 h-4" aria-hidden /> : <Headphones className="w-4 h-4" aria-hidden />}
+                <span className="hidden sm:inline">{t.player.recite}</span>
+              </button>
               <button
                 type="button"
                 onClick={() => (playing?.v === v.n ? stop() : playVerse(v))}
@@ -217,7 +275,7 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
                 </span>
               )}
               {view.translation && (
-                <p className="text-lg flex-1" lang={lang}>
+                <p className="text-lg flex-1 basis-full sm:basis-auto" lang={lang}>
                   <span className="font-bold text-primary mr-2">{num(locale, v.n)}.</span>
                   {lang === "bn" ? v.bn : v.en}
                 </p>
@@ -229,6 +287,17 @@ export function SurahReader({ n, fallback }: { n: number; fallback: { ar: string
       </div>
       <p className="mt-4 text-sm text-muted text-center">{lang === "bn" ? "অনুবাদ: তাইসীরুল কুরআন" : "Translation: Saheeh International"}</p>
       <WordSheet word={sheet} onClose={() => setSheet(null)} />
+      {player.state && (
+        <PlayerBar
+          state={player.state}
+          surahName={surahName}
+          verseCount={verseCount}
+          onPause={player.pause}
+          onResume={player.resume}
+          onGo={player.go}
+          onClose={player.close}
+        />
+      )}
     </>
   );
 }

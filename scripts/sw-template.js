@@ -46,6 +46,18 @@ async function staleWhileRevalidate(request, cacheName, opts) {
   return cached ?? (await network) ?? Response.error();
 }
 
+/** Data: always fresh when online (its format can change between deploys), cached copy when offline. */
+async function networkFirstData(request) {
+  const cache = await caches.open(DATA_CACHE);
+  try {
+    const res = await fetch(request);
+    if (res.ok) cache.put(request, res.clone());
+    return res;
+  } catch {
+    return (await cache.match(request)) ?? Response.error();
+  }
+}
+
 /** Pages: try the network first so updates show up, fall back to cache when offline. */
 async function networkFirstPage(request) {
   const cache = await caches.open(PAGES_CACHE);
@@ -75,7 +87,7 @@ self.addEventListener("fetch", (event) => {
   } else if (url.pathname.startsWith("/_next/static/")) {
     event.respondWith(fromCache(request).then((hit) => hit ?? fetch(request)));
   } else if (url.pathname.startsWith("/data/")) {
-    event.respondWith(staleWhileRevalidate(request, DATA_CACHE));
+    event.respondWith(networkFirstData(request));
   } else {
     // RSC payloads (index.txt?_rsc=…) and other same-origin files
     event.respondWith(staleWhileRevalidate(request, PAGES_CACHE, { ignoreSearch: url.pathname.endsWith(".txt") }));

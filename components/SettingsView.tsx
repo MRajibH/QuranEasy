@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { CloudDownload, Smartphone } from "lucide-react";
 import { useLocale } from "./LocaleProvider";
 import { PageTitle, ProgressBar } from "./ui";
+import { ScriptPicker } from "./ScriptPicker";
 import { updateSettings, useSettings, type Settings } from "@/lib/settings";
 import { num } from "@/lib/i18n";
 import { TOTAL_LESSONS } from "@/lib/constants";
@@ -180,6 +181,11 @@ export function SettingsView() {
             ["both", t.settings.both],
           ]}
         />
+        <fieldset className="card p-5">
+          <p className="font-bold text-lg mb-1">{t.settings.script}</p>
+          <p className="text-sm text-muted mb-3">{t.settings.scriptHint}</p>
+          <ScriptPicker />
+        </fieldset>
         <Segmented
           label={t.settings.dailyGoal}
           value={s.dailyNew}

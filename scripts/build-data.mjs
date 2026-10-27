@@ -428,6 +428,53 @@ async function main() {
   for (let c = 1; c <= 114; c++) await writeDeck(buildDeck(`s${c}`, [c]));
   await fs.writeFile(path.join(BUILD_OUT, "decks.json"), JSON.stringify(deckIndex));
 
+  // ---- IndoPak script, word-aligned with the Uthmani text ----
+  await fs.mkdir(path.join(OUT, "indopak"), { recursive: true });
+  for (let c = 1; c <= 114; c++) {
+    // Drop zero-width marks and private-use glyphs (meant for one specific web font).
+    const ip = (await readJson(path.join(RAW, "indopak", `${c}.json`))).map((v) =>
+      v.map((w) => w.replace(/[\u200b-\u200f\ufeff\ue000-\uf8ff]/g, "").trim()),
+    );
+    if (ip.length !== surahs[c - 1].verses.length) throw new Error(`indopak verse count mismatch in ${c}`);
+    await fs.writeFile(path.join(OUT, "indopak", `${c}.json`), JSON.stringify(ip));
+  }
+
+  // ---- every occurrence of each word (word pages), packed into ~250 KB chunks ----
+  // entry: [ "s:a", startWordNumber, highlightIndex, "word|word|…" ] — "|" because some words contain spaces (pause marks)
+  const OCC_SIDE = 4;
+  const OCC_CHUNK_BYTES = 250_000;
+  await fs.mkdir(path.join(OUT, "occ"), { recursive: true });
+  const occIndex = {};
+  let chunk = {};
+  let chunkBytes = 0;
+  let chunkNo = 0;
+  const flush = async () => {
+    if (!chunkBytes) return;
+    await fs.writeFile(path.join(OUT, "occ", `${chunkNo}.json`), JSON.stringify(chunk));
+    chunkNo++;
+    chunk = {};
+    chunkBytes = 0;
+  };
+  for (const st of ordered) {
+    const id = idOf.get(st.key);
+    if (st.freq < WORD_PAGE_MIN_FREQ) continue;
+    const entries = st.occ.map((loc) => {
+      const [c, a, w] = loc.split(":").map(Number);
+      const words = verseOf.get(`${c}:${a}`).words;
+      const from = Math.max(0, w - 1 - OCC_SIDE);
+      const to = Math.min(words.length, w + OCC_SIDE);
+      return [`${c}:${a}`, from + 1, w - 1 - from, words.slice(from, to).map((x) => x.ar).join("|")];
+    });
+    const size = JSON.stringify(entries).length;
+    if (chunkBytes && chunkBytes + size > OCC_CHUNK_BYTES) await flush();
+    chunk[id] = entries;
+    chunkBytes += size;
+    occIndex[id] = chunkNo;
+  }
+  await flush();
+  await fs.writeFile(path.join(OUT, "occ", "index.json"), JSON.stringify(occIndex));
+  console.log(`occurrence chunks: ${chunkNo}`);
+
   await fs.writeFile(
     path.join(BUILD_OUT, "stats.json"),
     JSON.stringify({ totalWords, lemmas: lemmas.length, lessons: lessonIndex.length, lessonSize: LESSON_SIZE }),

@@ -5,6 +5,7 @@ import { ArrowRight, BookOpen, Flame, GraduationCap, Repeat, Target } from "luci
 import { useLiveQuery } from "dexie-react-hooks";
 import { useLocale } from "./LocaleProvider";
 import { ProgressBar } from "./ui";
+import { ScriptPicker } from "./ScriptPicker";
 import { db } from "@/lib/db";
 import { nextLessonId, useCompletedLessons, useDueCount, useTodayNewCount } from "@/lib/progress";
 import { updateSettings, useSettings, type MeaningLang } from "@/lib/settings";
@@ -76,6 +77,10 @@ function Onboarding() {
           ))}
         </div>
         <p className="text-muted mt-2">{t.home.goalHint(num(locale, s.dailyNew))}</p>
+      </fieldset>
+      <fieldset className="mt-6">
+        <legend className="font-semibold text-lg mb-3">{num(locale, 3)}. {t.home.setupScript}</legend>
+        <ScriptPicker />
       </fieldset>
       <Link
         href={`/${locale}/lesson/?n=1`}

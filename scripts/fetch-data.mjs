@@ -45,6 +45,22 @@ async function fetchChapter(lang, chapter) {
   await fs.writeFile(file, JSON.stringify(verses));
 }
 
+/** IndoPak ("Hafezi") script for every word — the script most readers in Bangladesh learned with. */
+async function fetchIndopak(chapter) {
+  const file = path.join(RAW, "indopak", `${chapter}.json`);
+  if (await exists(file)) return;
+  const verses = [];
+  for (let page = 1; ; page++) {
+    const url = `${API}/verses/by_chapter/${chapter}?words=true&word_fields=text_indopak&per_page=50&page=${page}`;
+    const data = await getJson(url);
+    for (const v of data.verses) {
+      verses.push(v.words.filter((w) => w.char_type_name === "word").map((w) => w.text_indopak));
+    }
+    if (!data.pagination.next_page) break;
+  }
+  await fs.writeFile(file, JSON.stringify(verses));
+}
+
 async function main() {
   for (const lang of Object.keys(LANGS)) {
     await fs.mkdir(path.join(RAW, "qcom", lang), { recursive: true });
@@ -66,16 +82,18 @@ async function main() {
     }
   }
 
+  await fs.mkdir(path.join(RAW, "indopak"), { recursive: true });
   const jobs = [];
   for (const lang of Object.keys(LANGS)) {
     for (let c = 1; c <= 114; c++) jobs.push([lang, c]);
   }
+  for (let c = 1; c <= 114; c++) jobs.push(["indopak", c]);
   let done = 0;
   const worker = async () => {
     while (jobs.length) {
       const [lang, c] = jobs.shift();
-      await fetchChapter(lang, c);
-      if (++done % 20 === 0) console.log(`chapters ${done}/228`);
+      await (lang === "indopak" ? fetchIndopak(c) : fetchChapter(lang, c));
+      if (++done % 40 === 0) console.log(`chapters ${done}/342`);
     }
   };
   await Promise.all(Array.from({ length: 6 }, worker));

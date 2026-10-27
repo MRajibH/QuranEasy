@@ -32,3 +32,15 @@ export function loadLemmaMap() {
 export const loadDaily = () => load<number[]>("/data/daily.json");
 export const loadWord = (id: number) => load<import("./types").WordDetail>(`/data/word/${id}.json`);
 export const loadDeck = (id: string) => load<import("./types").Deck>(`/data/decks/${id}.json`);
+export const loadIndopak = (n: number) => load<string[][]>(`/data/indopak/${n}.json`);
+
+/** Occurrence entry: ["s:a", startWordNumber, highlightIndex, "word|word|…"] */
+export type Occurrence = [ref: string, start: number, hi: number, words: string];
+
+export async function loadOccurrences(id: number): Promise<Occurrence[]> {
+  const index = await load<Record<string, number>>("/data/occ/index.json");
+  const chunk = index[id];
+  if (chunk === undefined) return [];
+  const data = await load<Record<string, Occurrence[]>>(`/data/occ/${chunk}.json`);
+  return data[id] ?? [];
+}

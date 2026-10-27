@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { playWord } from "@/lib/audio";
+import { scriptClass, useIndopak } from "./useIndopak";
 
 /**
  * An ayah (or part of one) where every word can be tapped to hear its exact recitation.
@@ -21,9 +22,11 @@ export function AyahWords({
   className?: string;
 }) {
   const [active, setActive] = useState<number | null>(null);
+  const [s, a] = verseRef.split(":").map(Number);
+  const ip = useIndopak(s)?.[a - 1];
   let n = start - 1;
   return (
-    <p className={`font-arabic ${className}`} lang="ar" dir="rtl">
+    <p className={`${scriptClass(!!ip)} ${className}`} lang="ar" dir="rtl">
       {words.map((w, i) => {
         if (w === "…") return <span key={i} className="text-muted"> … </span>;
         const loc = `${verseRef}:${++n}`;
@@ -38,7 +41,7 @@ export function AyahWords({
               }}
               className={`rounded-lg px-0.5 transition-colors hover:bg-primary-soft ${i === hi ? "hl-word" : ""} ${active === i ? "ring-2 ring-accent" : ""}`}
             >
-              {w}
+              {ip?.[n - 1] ?? w}
             </button>{" "}
           </span>
         );

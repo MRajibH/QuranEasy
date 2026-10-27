@@ -81,5 +81,8 @@ Status legend: ✅ done · 🚧 in progress · ⏳ planned
 - [x] Report-a-mistake on every word; hand-reviewed base meanings in `data/curated/meanings.json`
 - [x] Modern home: Today first, quick actions to every way of learning; floating bottom navigation
 - [x] Canonical domain https://quraneasy.rajib.uk for sitemap and social previews
+- [x] **IndoPak (Hafezi) script** option — reader, examples and occurrence lists; chosen at setup or in Settings
+- [x] **Every place a word appears** on word pages (all occurrences, 20 at a time, tappable words)
+- [x] **Full-ayah recitation:** 7 reciters, play whole surah, repeat each ayah 1/3/5/10× for memorising
 - [ ] Optional cloud sync (Cloudflare D1) only if users ask
 - [ ] More languages (Urdu, Indonesian)
